@@ -30,6 +30,7 @@
 - [x] ปรับ primary key ของคำศัพท์เป็นระดับชั้น + คำ
 - [x] เพิ่ม import audit gate กลางสำหรับ UI/command line
 - [x] เพิ่ม import preview ใน UI ก่อนเขียนฐานข้อมูล
+- [x] แยกหน้าจอเป็น tab นำเข้าข้อมูลและ tab สร้างใบงาน
 
 ### In Progress
 

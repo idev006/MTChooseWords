@@ -8,7 +8,7 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QCheckBox, QComboBox, QFileDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel,
     QLineEdit, QMainWindow, QMessageBox, QProgressBar, QPushButton, QRadioButton,
-    QSlider, QSpinBox, QStatusBar, QVBoxLayout, QWidget,
+    QSlider, QSpinBox, QStatusBar, QTabWidget, QVBoxLayout, QWidget,
 )
 
 from app.core.config import AppConfig
@@ -129,10 +129,6 @@ class MainWindow(QMainWindow):
         heading.setObjectName("heading")
         layout.addWidget(heading)
 
-        form = QGridLayout()
-        box = QGroupBox("การสร้างเอกสาร")
-        box.setLayout(form)
-        layout.addWidget(box)
         # All user-adjustable bounded quantities use sliders for fast visual tuning.
         self.pages = self._slider(self.cfg.pages, 1, 100, " หน้า")
         self.words = self._slider(self.cfg.words_per_page, 1, 1000, " คำ")
@@ -177,18 +173,47 @@ class MainWindow(QMainWindow):
             grade_row.addWidget(checkbox)
         grade_row.addStretch()
         self.fonts = QComboBox()
-        fields = [("ไฟล์คำศัพท์", source_row), ("โหมด Reload", self.clear_before_reload), ("จำนวนชุดเอกสาร", self.document_sets), ("จำนวนหน้า/ชุด", self.pages), ("จำนวนคำต่อหน้า", self.words), ("ระดับชั้น", self.grade_selector), ("ฟอนท์", self.fonts), ("การวางกระดาษ", self.orientation), ("ช่วงขนาดฟอนท์ (pt)", self.font_range), ("ช่วงองศาหมุน", self.rotation_range), ("ข้อความ Title", self.title), ("ขนาด Title (pt)", self.title_size), ("สีตัวอักษร Title", self.title_color), ("สีพื้น Title", self.title_bgcolor), ("ระยะห่างบน (px)", self.title_margin), ("ระยะห่างล่าง (px)", self.title_margin_bottom), ("Padding Title (px)", self.title_padding), ("Seed (0 = สุ่มใหม่)", self.seed)]
-        for i, (label, widget) in enumerate(fields):
-            form.addWidget(QLabel(label), i // 2, (i % 2) * 2)
-            form.addWidget(widget, i // 2, (i % 2) * 2 + 1)
 
-        buttons = QHBoxLayout()
+        tabs = QTabWidget()
+        layout.addWidget(tabs, 1)
+
+        import_tab = QWidget()
+        import_layout = QVBoxLayout(import_tab)
+        import_box = QGroupBox("นำเข้าข้อมูลคำศัพท์")
+        import_form = QGridLayout(import_box)
+        import_fields = [("ไฟล์คำศัพท์", source_row), ("โหมด Reload", self.clear_before_reload)]
+        for i, (label, widget) in enumerate(import_fields):
+            import_form.addWidget(QLabel(label), i, 0)
+            import_form.addWidget(widget, i, 1)
         self.refresh = QPushButton("Reload คำจาก DOCX/PDF")
+        import_buttons = QHBoxLayout()
+        import_buttons.addStretch()
+        import_buttons.addWidget(self.refresh)
+        import_layout.addWidget(import_box)
+        import_layout.addLayout(import_buttons)
+        import_layout.addStretch()
+        tabs.addTab(import_tab, "นำเข้าข้อมูล")
+
+        worksheet_tab = QWidget()
+        worksheet_layout = QVBoxLayout(worksheet_tab)
+        worksheet_box = QGroupBox("สร้างไฟล์ใบงาน")
+        worksheet_form = QGridLayout(worksheet_box)
+        worksheet_fields = [("จำนวนชุดเอกสาร", self.document_sets), ("จำนวนหน้า/ชุด", self.pages), ("จำนวนคำต่อหน้า", self.words), ("ระดับชั้น", self.grade_selector), ("ฟอนท์", self.fonts), ("การวางกระดาษ", self.orientation), ("ช่วงขนาดฟอนท์ (pt)", self.font_range), ("ช่วงองศาหมุน", self.rotation_range), ("ข้อความ Title", self.title), ("ขนาด Title (pt)", self.title_size), ("สีตัวอักษร Title", self.title_color), ("สีพื้น Title", self.title_bgcolor), ("ระยะห่างบน (px)", self.title_margin), ("ระยะห่างล่าง (px)", self.title_margin_bottom), ("Padding Title (px)", self.title_padding), ("Seed (0 = สุ่มใหม่)", self.seed)]
+        for i, (label, widget) in enumerate(worksheet_fields):
+            worksheet_form.addWidget(QLabel(label), i // 2, (i % 2) * 2)
+            worksheet_form.addWidget(widget, i // 2, (i % 2) * 2 + 1)
         self.save = QPushButton("บันทึกการตั้งค่า")
         self.output = QPushButton("เลือกโฟลเดอร์ผลลัพธ์")
         self.generate = QPushButton("สร้าง PDF")
-        for b in (self.refresh, self.save, self.output, self.generate): buttons.addWidget(b)
-        layout.addLayout(buttons)
+        worksheet_buttons = QHBoxLayout()
+        worksheet_buttons.addStretch()
+        for b in (self.save, self.output, self.generate):
+            worksheet_buttons.addWidget(b)
+        worksheet_layout.addWidget(worksheet_box)
+        worksheet_layout.addLayout(worksheet_buttons)
+        worksheet_layout.addStretch()
+        tabs.addTab(worksheet_tab, "สร้างใบงาน")
+
         self.info = QLabel()
         layout.addWidget(self.info)
         self.progress = QProgressBar(); self.progress.setRange(0, 100); self.progress.setValue(0)

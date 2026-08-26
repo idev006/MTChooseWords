@@ -28,7 +28,7 @@ Assets
 
 | โมดูล | หน้าที่ |
 |---|---|
-| `app/ui/main_window.py` | UI, validation, progress และ worker thread |
+| `app/ui/main_window.py` | UI แบบ 2 tab สำหรับนำเข้าข้อมูลและสร้างใบงาน, validation, progress และ worker thread |
 | `app/core/extractor.py` | ตรวจเส้นตาราง, อ่านเฉพาะ word cells, แก้ลำดับ Unicode ภาษาไทย และตรวจครบทุกหน้า |
 | `app/core/docx_extractor.py` | อ่านเฉพาะ cell ในตารางของไฟล์ Word `.docx` และผูกคำกับระดับชั้นจากชื่อไฟล์ |
 | `app/core/word_source_extractor.py` | เลือก adapter ตามนามสกุลไฟล์และรวม source `.docx`/`.pdf` |
@@ -115,3 +115,5 @@ Pipeline ห้าม import ข้อมูลที่ไม่ผ่าน so
 DOCX เป็น production path หลักสำหรับความถูกต้องของคำ เพราะอ่านจาก XML table โดยตรง ส่วน PDF เป็น legacy supported path ที่ใช้ได้เมื่อ text layer และ table geometry ถูกต้องตาม contract เท่านั้น
 
 UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน การเขียนฐานข้อมูลจะเกิดเฉพาะเมื่อผู้ใช้กด Reload และยืนยัน preview หลัง audit ผ่านแล้ว
+
+หน้าจอหลักแยก workflow เป็น tab `นำเข้าข้อมูล` สำหรับ source/audit/reload และ tab `สร้างใบงาน` สำหรับ grade filter, layout settings และ export PDF เพื่อลดความสับสนและลดโอกาสกดผิดขั้นตอน
