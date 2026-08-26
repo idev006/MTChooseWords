@@ -55,6 +55,8 @@ app/doc/evidence/word_source_audit_report.json
 - REVIEW: อ่านได้ แต่มีคำที่ Python สงสัย เช่น cell ยาวมาก คำซ้ำ หรือรูปอักขระที่ควรตรวจ
 - FAIL: ห้าม import จนกว่าจะแก้ source หรือปรับ parser พร้อม test
 
+Audit command ต้องคืน exit code ไม่ผ่านเมื่อมี `FAIL` หรือ `REVIEW` เพื่อกันไม่ให้ CI/release pipeline ผ่านโดยยังมีคำที่ไม่ได้ตรวจรับ
+
 ทุกครั้งที่ reload ผ่าน command line ระบบสร้างรายงาน:
 
 ```text

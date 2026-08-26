@@ -6,6 +6,7 @@ from app.core.docx_extractor import DocxTableExtractor
 from app.core.review_registry import load_reviewed_suspicions
 from app.core.source_contract import collect_word_suspicions, validate_word_entries
 from app.core.word_source_extractor import TableWordSourceExtractor
+from scripts.audit_word_sources import main as audit_main
 
 
 DOCUMENT_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -34,6 +35,12 @@ DOCUMENT_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 def _write_docx(path: Path) -> None:
     with ZipFile(path, "w") as archive:
         archive.writestr("word/document.xml", DOCUMENT_XML)
+
+
+def _write_docx_with_word(path: Path, word: str) -> None:
+    xml = DOCUMENT_XML.replace("<w:t>กา</w:t>", f"<w:t>{word}</w:t>").replace("<w:t>คำ</w:t>", "<w:t>ขา</w:t>")
+    with ZipFile(path, "w") as archive:
+        archive.writestr("word/document.xml", xml)
 
 
 def test_docx_extractor_reads_only_table_word_cells(tmp_path):
@@ -107,3 +114,11 @@ def test_review_registry_loads_approved_suspicions(tmp_path):
     registry.write_text('{"approved_suspicions":[{"grade":1,"text":" ชิ้น ","reason":"duplicate_in_same_grade"}]}', encoding="utf-8")
 
     assert load_reviewed_suspicions(registry) == {(1, "ชิ้น", "duplicate_in_same_grade")}
+
+
+def test_audit_cli_fails_when_review_is_unresolved(tmp_path, monkeypatch):
+    source = tmp_path / "บัญชีคำพื้นฐาน ป.1.docx"
+    _write_docx_with_word(source, "พระราชบัญญัติการศึกษาแห่งชาติฉบับปรับปรุงเพิ่มเติม")
+    monkeypatch.setattr("sys.argv", ["audit_word_sources.py", str(source), "--output", str(tmp_path / "audit.json")])
+
+    assert audit_main() == 1

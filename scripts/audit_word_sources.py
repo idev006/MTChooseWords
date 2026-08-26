@@ -80,7 +80,7 @@ def main() -> int:
     output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Audit report: {output}")
     print(json.dumps(payload["summary"], ensure_ascii=False))
-    return 1 if payload["summary"]["fail"] else 0
+    return 1 if payload["summary"]["fail"] or payload["summary"]["review"] else 0
 
 
 if __name__ == "__main__":
