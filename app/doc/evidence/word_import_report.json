@@ -1,0 +1,21 @@
+{
+  "total_cells": 6182,
+  "unique_words": 6173,
+  "counts_by_grade": {
+    "1": 708,
+    "2": 1098,
+    "3": 1206,
+    "4": 1270,
+    "5": 1048,
+    "6": 852
+  },
+  "duplicate_cells": 9,
+  "source_files": [
+    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.1.docx",
+    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.2.docx",
+    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.4.docx",
+    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx"
+  ]
+}

@@ -1,0 +1,30 @@
+[paths]
+words_dir = "app/assets/words/lot1"
+fonts_dir = "app/assets/fonts"
+output_dir = "app/output"
+database = "app/mtchoosewords.sqlite3"
+word_source_files = []
+
+[pdf]
+orientation = "landscape"
+pages = 3
+words_per_page = 15
+document_sets = 10
+font_min_pt = 18
+font_max_pt = 70
+rotation_min = -30
+rotation_max = 30
+title = "นักล่าคำตัวจริง ตามหาฉันให้เจอ (คำพื้นฐาน ชั้น ป.3)"
+title_font_size = 30
+title_color = "#263238"
+title_margin_top_px = 10
+title_margin_bottom_px = 18
+title_padding_px = 6
+title_bgcolor = "#FFFFFF"
+page_margin_pt = 24
+seed = 0
+selected_grades = [1, 2, 3, 4, 5, 6]
+clear_words_before_import = true
+
+[colors]
+values = ["#EF5350", "#EC407A", "#AB47BC", "#7E57C2", "#5C6BC0", "#42A5F5", "#29B6F6", "#26C6DA", "#26A69A", "#66BB6A", "#9CCC65", "#D4E157", "#FFEE58", "#FFCA28", "#FFA726", "#FF7043", "#8D6E63", "#78909C"]

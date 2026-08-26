@@ -1,0 +1,76 @@
+{
+  "approved_suspicions": [
+    {
+      "grade": 1,
+      "text": "ชิ้น",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.1."
+    },
+    {
+      "grade": 2,
+      "text": "สด",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.2."
+    },
+    {
+      "grade": 3,
+      "text": "รู้อะไรไม่สู้รู้วิชา รู้รักษาตัวรอดเป็นยอดดี",
+      "reason": "long_cell_review",
+      "review": "Long proverb-style vocabulary cell from source. Keep as one learning item."
+    },
+    {
+      "grade": 3,
+      "text": "หลง",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.3."
+    },
+    {
+      "grade": 3,
+      "text": "โอ้เอ้วิหารราย",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.3."
+    },
+    {
+      "grade": 5,
+      "text": "โฉมตรู",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.5."
+    },
+    {
+      "grade": 5,
+      "text": "สมเด็จพระเทพรัตนราชสุดาฯ สยามบรมราชกุมารี",
+      "reason": "long_cell_review",
+      "review": "Long proper-name vocabulary cell from source. Keep as one learning item."
+    },
+    {
+      "grade": 5,
+      "text": "ประวัติศาสตร์",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.5."
+    },
+    {
+      "grade": 6,
+      "text": "คนที่ไม่มีจุดมุ่งหมายใดในชีวิต เปรียบเสมือนเรือไม่มีหางเสือ",
+      "reason": "long_cell_review",
+      "review": "Long sentence-style vocabulary cell from source. Keep as one learning item."
+    },
+    {
+      "grade": 6,
+      "text": "นมัสการ",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.6."
+    },
+    {
+      "grade": 6,
+      "text": "นักขัตฤกษ์",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.6."
+    },
+    {
+      "grade": 6,
+      "text": "เศียร",
+      "reason": "duplicate_in_same_grade",
+      "review": "Duplicate source cell. Database primary key keeps one copy for ป.6."
+    }
+  ]
+}

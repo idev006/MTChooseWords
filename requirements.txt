@@ -1,0 +1,12 @@
+PySide6>=6.7
+SQLAlchemy>=2.0
+alembic>=1.13
+reportlab>=4.2
+pypdf>=5.0
+Pillow>=10.0
+fonttools>=4.50
+tomlkit>=0.12
+pdfplumber>=0.11
+pytest>=8.0
+pyinstaller>=6.0
+pythainlp>=5.3

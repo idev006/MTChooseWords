@@ -1,0 +1,1 @@
+"""MT Choose Words application."""

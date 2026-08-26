@@ -1,0 +1,38 @@
+# Changelog
+
+## 2026-08-26 — DOCX word-bank and grade selection
+
+- เพิ่ม DOCX table importer สำหรับอ่านเฉพาะคำศัพท์ในตารางจาก `app/assets/words/lot1`
+- เพิ่ม multi-format source extractor รองรับ `.docx` และ `.pdf` แบบ table-based
+- เพิ่ม source contract validator และ import evidence report
+- เพิ่มข้อมูลระดับชั้นในฐานข้อมูลและ query/filter ตาม ป.1-ป.6
+- เปลี่ยน schema ให้ `grade + normalized word` เป็น primary key
+- เพิ่ม checkbox เลือกระดับชั้นใน UI และบันทึกลง `config.toml`
+- เพิ่ม file picker สำหรับเลือก source หลายไฟล์ และโหมด clear-all/append
+- ปรับ Reload ให้ใช้ไฟล์ `.docx`/`.pdf` และข้าม `.doc`
+- เพิ่ม `scripts/audit_word_sources.py` สำหรับรายงานคำที่ Python สงสัยก่อน import
+- เพิ่ม long-cell review policy สำหรับคำยาวที่อาจแสดงหลายบรรทัดใน Word/PDF
+- เพิ่ม reviewed suspicion registry และ AI review evidence สำหรับคำที่ตรวจรับแล้ว
+- เพิ่ม automated tests สำหรับ DOCX table-only extraction และ grade filtering
+
+## 2026-07-26 — MVP baseline
+
+- เพิ่มเอกสารโครงการแบบ Document-Driven Project
+- เพิ่ม Kanban board และ Definition of Done
+- บันทึก architecture decisions สำหรับ PySide6, SQLite/SQLAlchemy, ReportLab และ collision strategy
+- บันทึกแผนทดสอบและคู่มือผู้ใช้
+- เปลี่ยนตัวสกัดคำเป็น table-cell extraction ด้วย pdfplumber
+- รองรับการแก้ลำดับ Unicode ของสระ/วรรณยุกต์ไทยจากตำแหน่ง glyph ใน PDF
+- เพิ่ม `scripts/reload_words.py` และปุ่ม Reload ใน UI
+- ตรวจสอบ PDF ปัจจุบันได้ 1,210 คำ unique จากตาราง 41 หน้า
+- เพิ่มกฎบังคับให้ source code แต่ละไฟล์ไม่เกิน 700 บรรทัด
+- เพิ่ม pytest configuration, unit tests และ PyInstaller spec
+- เพิ่ม package entry point `python -m app`
+- ทดสอบ PyInstaller build สำเร็จเป็น `dist/MTChooseWords.exe`
+- เพิ่ม test contracts, integration test ของ PDF จริง และ test report
+- แก้ปัญหา Thai PDF `/ToUnicode` mapping ทำให้ `ตำลึง` อ่านเป็น `ตาลึง`
+- เพิ่ม dictionary-backed Thai normalization และ regression tests
+- เพิ่ม `MTChooseWords.bat` สำหรับเปิดโปรแกรม, Reload, Test และ Build ผ่านเมนูเดียว
+- ประยุกต์แนวคิด cell-based extraction ด้วย `find_tables()` และอ่าน glyph เฉพาะใน cell
+- ระบุการใช้ Thai dictionary จาก `pythainlp` ในสถาปัตยกรรมและเกณฑ์การซ่อมคำ
+- ปรับ layout engine ให้ลองจัดวางใหม่หลายรอบและวางคำยาวก่อน ลดปัญหาคำลำดับท้ายจัดวางไม่ได้
