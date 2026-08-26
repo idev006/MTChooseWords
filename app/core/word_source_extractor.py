@@ -12,7 +12,7 @@ from app.core.source_contract import validate_word_entries
 class TableWordSourceExtractor:
     """Read supported table-based word sources: DOCX and text-layer PDF."""
 
-    def _sources(self, source: Path | Iterable[Path]) -> list[Path]:
+    def sources_from(self, source: Path | Iterable[Path]) -> list[Path]:
         if isinstance(source, Path):
             candidates = [source]
         else:
@@ -34,7 +34,7 @@ class TableWordSourceExtractor:
 
     def extract(self, source: Path | Iterable[Path]) -> list[WordEntry]:
         rows: list[WordEntry] = []
-        sources = self._sources(source)
+        sources = self.sources_from(source)
         if not sources:
             raise ValueError("ไม่พบไฟล์ .docx หรือ .pdf ใน source ที่เลือก")
 

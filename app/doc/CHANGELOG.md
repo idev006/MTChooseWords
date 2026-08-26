@@ -14,6 +14,10 @@
 - เพิ่ม long-cell review policy สำหรับคำยาวที่อาจแสดงหลายบรรทัดใน Word/PDF
 - เพิ่ม reviewed suspicion registry และ AI review evidence สำหรับคำที่ตรวจรับแล้ว
 - เพิ่ม automated tests สำหรับ DOCX table-only extraction และ grade filtering
+- เพิ่ม import audit gate กลางให้ UI และ command line ใช้ร่วมกัน
+- ปรับ Reload ให้บล็อกก่อนเขียนฐานข้อมูลเมื่อ source ยังมี REVIEW/FAIL
+- เพิ่ม preview ยืนยันก่อน Reload ใน UI พร้อมสรุปจำนวนไฟล์/cell/คำไม่ซ้ำ/โหมดนำเข้า
+- ปรับ UI ไม่ให้ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน
 
 ## 2026-07-26 — MVP baseline
 

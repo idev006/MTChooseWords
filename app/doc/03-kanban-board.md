@@ -28,6 +28,8 @@
 - [x] ปรับฐานข้อมูลและ query ให้กรองคำตามระดับชั้น
 - [x] เพิ่มการเลือกไฟล์ source และโหมด clear-all/append
 - [x] ปรับ primary key ของคำศัพท์เป็นระดับชั้น + คำ
+- [x] เพิ่ม import audit gate กลางสำหรับ UI/command line
+- [x] เพิ่ม import preview ใน UI ก่อนเขียนฐานข้อมูล
 
 ### In Progress
 
@@ -39,8 +41,8 @@
 - [ ] เพิ่ม preview ก่อน export
 - [ ] เพิ่ม color palette editor ใน UI
 - [ ] เพิ่มปุ่มเปิดโฟลเดอร์ output
-- [ ] เพิ่มระบบ import/re-index แบบแสดงรายละเอียด noise
-- [ ] เพิ่ม import preview และ issue report ใน UI
+- [ ] เพิ่มระบบ issue report UI แบบเปิดดูรายการ REVIEW รายคำได้
+- [ ] เพิ่ม visual diff/review สำหรับ PDF source ที่ text layer ไม่น่าเชื่อถือ
 - [ ] เพิ่ม migration revision แรกของ Alembic
 
 ### Backlog

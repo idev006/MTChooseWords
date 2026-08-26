@@ -3,6 +3,7 @@ from zipfile import ZipFile
 
 from app.core.contracts import WordEntry
 from app.core.docx_extractor import DocxTableExtractor
+from app.core.import_audit import audit_word_sources
 from app.core.review_registry import load_reviewed_suspicions
 from app.core.source_contract import collect_word_suspicions, validate_word_entries
 from app.core.word_source_extractor import TableWordSourceExtractor
@@ -122,3 +123,29 @@ def test_audit_cli_fails_when_review_is_unresolved(tmp_path, monkeypatch):
     monkeypatch.setattr("sys.argv", ["audit_word_sources.py", str(source), "--output", str(tmp_path / "audit.json")])
 
     assert audit_main() == 1
+
+
+def test_import_audit_blocks_unreviewed_suspicions(tmp_path):
+    source = tmp_path / "บัญชีคำพื้นฐาน ป.1.docx"
+    _write_docx_with_word(source, "พระราชบัญญัติการศึกษาแห่งชาติฉบับปรับปรุงเพิ่มเติม")
+
+    audit = audit_word_sources(source, tmp_path / "reviewed.json")
+
+    assert audit.can_import is False
+    assert audit.summary.review_count == 1
+
+
+def test_import_audit_allows_reviewed_suspicions(tmp_path):
+    source = tmp_path / "บัญชีคำพื้นฐาน ป.1.docx"
+    reviewed = tmp_path / "reviewed.json"
+    word = "พระราชบัญญัติการศึกษาแห่งชาติฉบับปรับปรุงเพิ่มเติม"
+    _write_docx_with_word(source, word)
+    reviewed.write_text(
+        '{"approved_suspicions":[{"grade":1,"text":"พระราชบัญญัติการศึกษาแห่งชาติฉบับปรับปรุงเพิ่มเติม","reason":"long_cell_review"}]}',
+        encoding="utf-8",
+    )
+
+    audit = audit_word_sources(source, reviewed)
+
+    assert audit.can_import is True
+    assert audit.summary.pass_count == 1

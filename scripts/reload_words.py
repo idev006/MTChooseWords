@@ -6,8 +6,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.core.config import AppConfig
-from app.core.source_contract import validate_word_entries, write_import_report
-from app.core.word_source_extractor import TableWordSourceExtractor
+from app.core.import_audit import audit_word_sources, write_audit_report
+from app.core.source_contract import write_import_report
 from app.db.database import WordRepository
 
 
@@ -25,18 +25,23 @@ def main() -> int:
     config = AppConfig.load(root / "config.toml")
     configured_sources = [config.resolve(value) for value in config.word_source_files]
     sources = args.sources or configured_sources or [config.resolve(config.words_dir)]
-    rows = TableWordSourceExtractor().extract(sources)
-    report = validate_word_entries(rows)
+    audit = audit_word_sources(sources, root / "app/assets/words/reviewed_suspicions.json")
+    write_audit_report(root / "app/doc/evidence/word_source_audit_report.json", audit)
+    if not audit.can_import or audit.import_report is None:
+        print(f"Reload blocked: {audit.blocking_message()}")
+        print("Review app/doc/evidence/word_source_audit_report.json before importing.")
+        return 1
+
     repository = WordRepository(config.resolve(config.database))
     if args.append:
-        count = repository.add_words(rows)
+        count = repository.add_words(audit.rows)
         mode = "append"
     else:
-        count = repository.replace_words(rows)
+        count = repository.replace_words(audit.rows)
         mode = "clear-all"
-    write_import_report(root / "app/doc/evidence/word_import_report.json", report)
+    write_import_report(root / "app/doc/evidence/word_import_report.json", audit.import_report)
     print(f"Reload complete ({mode}): {count} unique words")
-    print(f"Source cells: {report.total_cells}; duplicates removed: {report.duplicate_cells}")
+    print(f"Source cells: {audit.import_report.total_cells}; duplicates removed: {audit.import_report.duplicate_cells}")
     return 0
 
 

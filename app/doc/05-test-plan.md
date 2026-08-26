@@ -13,6 +13,8 @@
 | T-01F | Import evidence | Reload สำเร็จแล้วต้องสร้างรายงานจำนวน cell, unique words, duplicates และ source files |
 | T-01G | Append mode | Import เพิ่มโดยไม่ล้างฐานข้อมูลเดิม และไม่เพิ่มคำซ้ำในระดับชั้นเดิม |
 | T-01H | Long cell review | คำยาวใน cell เดียวต้องอ่านได้และถูก mark ให้ review แทนการตัดทิ้ง |
+| T-01I | Import audit gate | Reload ต้องถูกบล็อกเมื่อมี REVIEW/FAIL และผ่านได้เฉพาะรายการที่ตรวจรับแล้ว |
+| T-01J | Import preview | UI ต้องแสดง preview และต้องได้รับการยืนยันก่อนเขียน database |
 | T-02 | PDF ไม่มี text layer | แจ้งปัญหา ไม่สร้างผลลัพธ์ผิดพลาดเงียบ ๆ |
 | T-03 | ขอคำมากกว่าคลัง | แจ้งเตือนและไม่สร้าง PDF |
 | T-04 | หลายหน้า | คำไม่ซ้ำกันข้ามทุกหน้า |
@@ -35,6 +37,7 @@
 - Import report ต้องระบุ source files ที่ถูกใช้จริง
 - ฐานข้อมูลต้องใช้ `grade + normalized` เป็น key และ append mode ต้องไม่สร้าง duplicate key
 - คำยาวผิดปกติควรถูก audit เพื่อ review ก่อน production import
+- UI และ command line ต้องใช้ audit gate เดียวกันก่อนเขียนฐานข้อมูล
 
 ## 3. Cross-platform Matrix
 
@@ -63,4 +66,4 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 28 tests และ Reload DOCX จริงสำเร็จพร้อม import evidence
+Baseline ล่าสุด: pytest ผ่าน 31 tests, audit DOCX lot1 ผ่าน 6 ไฟล์โดยไม่มี REVIEW/FAIL และ Reload DOCX จริงสำเร็จพร้อม import evidence

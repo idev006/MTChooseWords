@@ -33,6 +33,7 @@ Assets
 | `app/core/docx_extractor.py` | อ่านเฉพาะ cell ในตารางของไฟล์ Word `.docx` และผูกคำกับระดับชั้นจากชื่อไฟล์ |
 | `app/core/word_source_extractor.py` | เลือก adapter ตามนามสกุลไฟล์และรวม source `.docx`/`.pdf` |
 | `app/core/source_contract.py` | ตรวจ source contract, ระดับชั้น, cell คำ และสร้าง import report |
+| `app/core/import_audit.py` | รวม audit gate สำหรับ UI/command line, สร้าง preview decision และบล็อก REVIEW/FAIL ก่อนเขียนฐานข้อมูล |
 | `app/core/pdf_generator.py` | สร้างหน้า A4, วัดขนาดคำ, หมุน และจัดวาง |
 | `app/db/models.py` | SQLAlchemy model ของคำศัพท์ |
 | `app/db/database.py` | สร้างฐานข้อมูลและ query คำแบบสุ่ม |
@@ -76,8 +77,9 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 - ไม่อ่านข้อความหัวเรื่อง ย่อหน้า หรือคำบรรยายนอกตาราง
 - ระดับชั้นอ่านจากชื่อไฟล์ เช่น `ป.1` ถึง `ป.6`
 - คำซ้ำภายในระดับชั้นถูกเก็บเป็นคำไม่ซ้ำในฐานข้อมูลตาม normalized key
-- `reload_words.py` สร้าง evidence report ที่ `app/doc/evidence/word_import_report.json`
-- UI รองรับการเลือกไฟล์ source เฉพาะชุด และเลือกระหว่าง clear-all หรือ append
+- `reload_words.py` และ UI ต้องผ่าน `import_audit.py` ก่อนเขียนฐานข้อมูล
+- Reload ที่ผ่าน audit จะสร้าง evidence report ที่ `app/doc/evidence/word_import_report.json`
+- UI รองรับการเลือกไฟล์ source เฉพาะชุด เลือกระหว่าง clear-all หรือ append และแสดง preview ก่อนยืนยันนำเข้า
 
 ### PDF legacy contract
 
@@ -111,3 +113,5 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 Pipeline ห้าม import ข้อมูลที่ไม่ผ่าน source contract หากตรวจพบ source ผิดรูปแบบ ต้องหยุดและแจ้งปัญหาแทนการเก็บคำที่อาจผิดลงฐานข้อมูล
 
 DOCX เป็น production path หลักสำหรับความถูกต้องของคำ เพราะอ่านจาก XML table โดยตรง ส่วน PDF เป็น legacy supported path ที่ใช้ได้เมื่อ text layer และ table geometry ถูกต้องตาม contract เท่านั้น
+
+UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน การเขียนฐานข้อมูลจะเกิดเฉพาะเมื่อผู้ใช้กด Reload และยืนยัน preview หลัง audit ผ่านแล้ว

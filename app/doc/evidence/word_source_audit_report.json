@@ -4,7 +4,8 @@
     "pass": 6,
     "review": 0,
     "fail": 0,
-    "total_cells": 6182
+    "total_cells": 6182,
+    "unique_words": 6173
   },
   "files": [
     {

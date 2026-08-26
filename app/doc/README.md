@@ -29,4 +29,4 @@
 
 ## สถานะเอกสาร
 
-เอกสารนี้ครอบคลุม baseline ของ MVP และการเพิ่ม DOCX/PDF table source pipeline ณ วันที่ 2026-08-26
+เอกสารนี้ครอบคลุม baseline ของ MVP, DOCX/PDF table source pipeline และ import audit/preview gate ณ วันที่ 2026-08-26

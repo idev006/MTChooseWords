@@ -31,9 +31,11 @@ Importer อ่านเฉพาะ cell ในตารางที่จั�
 - ชื่อไฟล์ไม่มีระดับชั้น ป.1-ป.6
 - ไม่พบคำศัพท์ในตาราง
 - cell คำว่างหรือมี control character
-- คำยาวผิดปกติเกิน 60 ตัวอักษร
+- คำยาวผิดปกติเกิน 120 ตัวอักษร
 - ระดับชั้นนอกช่วง ป.1-ป.6
 - PDF ไม่มี table geometry หรือไม่มี text layer ที่อ่านได้ตาม contract
+
+คำที่ยาวเกิน 40 ตัวอักษรยังอ่านได้ แต่ระบบจะจัดเป็น REVIEW เพื่อให้ AI/ทีมวิชาการตรวจรับก่อนใช้จริง เพราะอาจเป็นคำหรือวลีที่ Word แสดงหลายบรรทัดใน cell เดียว
 
 ## 4. Verification evidence
 
@@ -57,7 +59,9 @@ app/doc/evidence/word_source_audit_report.json
 
 Audit command ต้องคืน exit code ไม่ผ่านเมื่อมี `FAIL` หรือ `REVIEW` เพื่อกันไม่ให้ CI/release pipeline ผ่านโดยยังมีคำที่ไม่ได้ตรวจรับ
 
-ทุกครั้งที่ reload ผ่าน command line ระบบสร้างรายงาน:
+ทั้ง UI และ command line ใช้ audit gate เดียวกันผ่าน `app/core/import_audit.py` ดังนั้น Reload จะถูกบล็อกก่อนเขียน database หากยังมีไฟล์สถานะ `FAIL` หรือ `REVIEW`
+
+ทุกครั้งที่ reload ผ่าน UI หรือ command line ระบบสร้างรายงาน:
 
 ```text
 app/doc/evidence/word_import_report.json
@@ -101,7 +105,9 @@ Reload มี 2 โหมด:
 
 ผู้ใช้เลือก source ได้หลายไฟล์จาก UI หากไม่เลือกไฟล์เฉพาะ ระบบใช้ทุกไฟล์ที่รองรับใน `words_dir`
 
-Definition of Done สำหรับ content import คือ extractor ผ่าน automated tests, reload สำเร็จ, import report ตรงกับ source ที่ตั้งใจใช้ และไม่มี fail-closed warning เหลืออยู่
+ก่อน Reload ใน UI ระบบจะแสดง preview ให้ผู้ใช้ยืนยัน โดยสรุปจำนวน source, จำนวน cell คำที่อ่านได้, จำนวนคำไม่ซ้ำ และโหมด clear-all/append หากผู้ใช้ไม่ยืนยันจะไม่มีการเขียน database
+
+Definition of Done สำหรับ content import คือ extractor ผ่าน automated tests, audit gate PASS, ผู้ใช้ยืนยัน preview, reload สำเร็จ, import report ตรงกับ source ที่ตั้งใจใช้ และไม่มี fail-closed warning เหลืออยู่
 
 Reviewed suspicion registry:
 

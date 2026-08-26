@@ -13,7 +13,9 @@ from PySide6.QtWidgets import (
 
 from app.core.config import AppConfig
 from app.core.contracts import PdfExporter, WordExtractor, WordStore
+from app.core.import_audit import audit_word_sources, write_audit_report
 from app.core.pdf_generator import ReportLabPdfExporter
+from app.core.source_contract import write_import_report
 from app.core.word_source_extractor import TableWordSourceExtractor
 from app.core.output_naming import build_pdf_filename
 from app.core.document_batch import select_document_batches
@@ -65,7 +67,7 @@ class MainWindow(QMainWindow):
         self.resize(920, 680)
         self._build_ui()
         self._load_fonts()
-        self._refresh_words()
+        self._refresh_word_status()
 
     def _spin(self, value, minimum, maximum):
         box = QSpinBox()
@@ -218,6 +220,15 @@ class MainWindow(QMainWindow):
             return [self.cfg.resolve(value) for value in self.cfg.word_source_files]
         return self.cfg.resolve(self.cfg.words_dir)
 
+    def _review_registry_path(self) -> Path:
+        return self.root / "app/assets/words/reviewed_suspicions.json"
+
+    def _audit_report_path(self) -> Path:
+        return self.root / "app/doc/evidence/word_source_audit_report.json"
+
+    def _import_report_path(self) -> Path:
+        return self.root / "app/doc/evidence/word_import_report.json"
+
     def _choose_sources(self):
         start = str(self.cfg.resolve(self.cfg.words_dir))
         paths, _ = QFileDialog.getOpenFileNames(self, "เลือกไฟล์คำศัพท์", start, "Word/PDF (*.docx *.pdf)")
@@ -225,15 +236,68 @@ class MainWindow(QMainWindow):
             self.cfg.word_source_files = paths
             self.source_files.setText(self._source_summary())
 
+    def _refresh_word_status(self):
+        try:
+            if hasattr(self.repo, "count_by_grade"):
+                by_grade = self.repo.count_by_grade()
+                details = " | ".join(f"ป.{grade}: {by_grade.get(grade, 0)}" for grade in range(1, 7))
+                self.info.setText(f"คลังคำปัจจุบัน ({details})")
+            else:
+                self.info.setText(f"คลังคำปัจจุบัน: {self.repo.count()} คำ")
+        except Exception:
+            self.info.setText("ยังอ่านจำนวนคำในคลังไม่ได้")
+
+    def _preview_message(self, total_cells: int, unique_words: int, source_count: int) -> str:
+        mode = "ล้างคลังคำเดิมก่อนนำเข้า" if self.clear_before_reload.isChecked() else "เพิ่มเข้าไปโดยไม่ล้างคำเดิม"
+        return (
+            "ตรวจ source ผ่านแล้ว\n\n"
+            f"ไฟล์ที่เลือก: {source_count} ไฟล์\n"
+            f"จำนวน cell คำที่อ่านได้: {total_cells}\n"
+            f"จำนวนคำไม่ซ้ำที่จะใช้ได้: {unique_words}\n"
+            f"โหมด: {mode}\n\n"
+            "ยืนยันให้นำคำชุดนี้เข้า database หรือไม่?"
+        )
+
+    def _blocked_files_message(self, audit) -> str:
+        lines = [audit.blocking_message(), "", "ยังไม่นำคำเข้า database เพราะมี source ที่ต้องแก้หรือตรวจรับ:"]
+        for item in audit.files[:8]:
+            if item.status != "PASS":
+                name = Path(item.source_file).name
+                detail = item.error or f"พบรายการต้อง review {len(item.unresolved_suspicions)} จุด"
+                lines.append(f"- {name}: {item.status} ({detail})")
+        if len(audit.files) > 8:
+            lines.append("- ...")
+        lines.append("")
+        lines.append("ดูรายละเอียดได้ที่ app/doc/evidence/word_source_audit_report.json")
+        return "\n".join(lines)
+
     def _refresh_words(self):
         try:
-            rows = self.extractor.extract(self._selected_word_sources())
+            audit = audit_word_sources(self._selected_word_sources(), self._review_registry_path())
+            write_audit_report(self._audit_report_path(), audit)
+            if not audit.can_import or audit.import_report is None:
+                QMessageBox.warning(self, "ยัง Reload ไม่ได้", self._blocked_files_message(audit))
+                self.status.showMessage("Reload ถูกหยุดเพื่อรอตรวจรับ source")
+                return
+
+            answer = QMessageBox.question(
+                self,
+                "ยืนยัน Reload คำ",
+                self._preview_message(audit.summary.total_cells, audit.summary.unique_words, audit.source_count),
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            if answer != QMessageBox.Yes:
+                self.status.showMessage("ยกเลิก Reload คำ")
+                return
+
             if self.clear_before_reload.isChecked():
-                count = self.repo.replace_words(rows)
+                count = self.repo.replace_words(audit.rows)
                 action = "อัปเดต"
             else:
-                count = self.repo.add_words(rows)
+                count = self.repo.add_words(audit.rows)
                 action = "เพิ่ม"
+            write_import_report(self._import_report_path(), audit.import_report)
             if hasattr(self.repo, "count_by_grade"):
                 by_grade = self.repo.count_by_grade()
                 details = " | ".join(f"ป.{grade}: {by_grade.get(grade, 0)}" for grade in range(1, 7))
