@@ -95,6 +95,7 @@ app/doc/evidence/word_import_report.json
 - `.pdf`: รองรับเพื่อ compatibility แต่ถ้า PDF มี character map ผิดหรือ source ไม่ตรง contract ต้องแก้ source หรือทำ visual review ก่อนนำไปใช้จริง
 - AI หรือ OCR ไม่สามารถ overwrite คำศัพท์ production โดยไม่มี human review
 - คำที่ยาวจน Word แสดงหลายบรรทัดใน cell เดียวสามารถอ่านได้ แต่ audit จะ mark เป็น `long_cell_review` เพื่อให้ AI/คนตรวจซ้ำ
+- OCR-backed PDF extraction ต้องเทียบกับ expected list ที่ตรวจรับแล้วก่อน import production เพราะ OCR อาจอ่านเลขลำดับหรือคำบาง cell ผิดได้แม้ confidence สูง
 
 ## 6. Database key and import modes
 
@@ -137,6 +138,12 @@ The adapter supports PDF sources that pass the contract, but this specific PDF b
 
 ```powershell
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_sources.py app\assets\words\pdf --start-page 1 --max-pages 12
+```
+
+หาก text layer เพี้ยน ให้ตรวจแบบ OCR ราย cell โดยระบุหน้า:
+
+```powershell
+F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_ocr_cells.py "app\assets\words\pdf\_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf" --page 10
 ```
 
 Diagnostic status:

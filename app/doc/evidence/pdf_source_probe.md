@@ -34,6 +34,19 @@ Report: app/doc/evidence/pdf_source_diagnosis.json
 
 Observed examples from the PDF text layer include corrupted output such as `วิสรรชนียຏ`, `ล้ๅา฽ทຌ`, and `ามประ฼ภทของค้า`. These are not safe for production import.
 
+OCR cell diagnostic:
+
+```text
+2026-08-27
+Command: scripts/diagnose_pdf_ocr_cells.py "app/assets/words/pdf/_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf" --page 10 --max-cells 24
+Result: 9 candidates
+Report: app/doc/evidence/pdf_ocr_cell_diagnosis.json
+```
+
+OCR cell extraction can read several word cells correctly with high confidence, for example `กะพริบ`, `ขยิบตา`, `พระสนับเพลา`, `อับเฉา`, `กุหลาบ`, `ประทับ`, `พลับพลา`, `ขยับ`, and `ผอบ (ผะ-อบ)`.
+
+However, OCR still misreads some source indexes, for example a visible Thai digit may become another digit or mixed text such as `๒ อ`. Therefore OCR is currently a diagnostic/review path, not an approved production import path.
+
 Current certification status:
 
 ```text

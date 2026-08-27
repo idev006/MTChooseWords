@@ -98,6 +98,12 @@ app/doc/evidence/word_source_audit_report.json
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_sources.py app\assets\words\pdf --start-page 1 --max-pages 12
 ```
 
+หากต้องตรวจ OCR เฉพาะหน้า ให้ใช้:
+
+```powershell
+F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_ocr_cells.py "app\assets\words\pdf\_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf" --page 10
+```
+
 ## ข้อจำกัดปัจจุบัน
 
 - PDF ที่เป็นภาพสแกนยังไม่รองรับ OCR

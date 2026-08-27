@@ -22,6 +22,7 @@
 - ย้ายงาน audit/reload คำศัพท์ไปทำใน worker thread และแสดง progress/status เพื่อลดปัญหาหน้าจอค้าง
 - แยก source reader เป็น adapter registry เพื่อให้ test/plug adapter ใหม่ได้ง่ายขึ้น
 - เพิ่ม `scripts/diagnose_pdf_sources.py` สำหรับตรวจ PDF รายหน้าโดยไม่ import เข้า database
+- เพิ่ม OCR cell diagnosis สำหรับตรวจ PDF ที่ text layer เพี้ยน โดยยังไม่เปิด import production แบบ OCR จนกว่าจะมี expected output ตรวจรับ
 
 ## 2026-07-26 — MVP baseline
 

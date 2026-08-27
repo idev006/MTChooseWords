@@ -1,0 +1,88 @@
+{
+  "source_file": "app\\assets\\words\\pdf\\_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf",
+  "page": 10,
+  "candidate_count": 9,
+  "candidates": [
+    {
+      "table_index": 2,
+      "row_index": 1,
+      "pair_index": 0,
+      "source_index_text": "๑",
+      "source_index": 1,
+      "word_text": "กะพริบ",
+      "confidence": 94.16666666666667
+    },
+    {
+      "table_index": 2,
+      "row_index": 1,
+      "pair_index": 1,
+      "source_index_text": "๕",
+      "source_index": 5,
+      "word_text": "ขยิบตา",
+      "confidence": 93.5
+    },
+    {
+      "table_index": 2,
+      "row_index": 1,
+      "pair_index": 2,
+      "source_index_text": "๓",
+      "source_index": 3,
+      "word_text": "พระสนับเพลา",
+      "confidence": 94.1
+    },
+    {
+      "table_index": 2,
+      "row_index": 1,
+      "pair_index": 3,
+      "source_index_text": "๑ ๐",
+      "source_index": 10,
+      "word_text": "อับเฉา",
+      "confidence": 93.6
+    },
+    {
+      "table_index": 2,
+      "row_index": 2,
+      "pair_index": 0,
+      "source_index_text": "๒",
+      "source_index": 2,
+      "word_text": "กุหลาบ",
+      "confidence": 94.0
+    },
+    {
+      "table_index": 2,
+      "row_index": 2,
+      "pair_index": 1,
+      "source_index_text": "๕",
+      "source_index": 5,
+      "word_text": "ประทับ",
+      "confidence": 93.66666666666667
+    },
+    {
+      "table_index": 2,
+      "row_index": 2,
+      "pair_index": 2,
+      "source_index_text": "๕",
+      "source_index": 5,
+      "word_text": "พลับพลา",
+      "confidence": 94.14285714285714
+    },
+    {
+      "table_index": 2,
+      "row_index": 3,
+      "pair_index": 0,
+      "source_index_text": "6",
+      "source_index": 6,
+      "word_text": "ขยับ",
+      "confidence": 96.0
+    },
+    {
+      "table_index": 2,
+      "row_index": 3,
+      "pair_index": 1,
+      "source_index_text": "๒ อ",
+      "source_index": 2,
+      "word_text": "ผอบ (ผะ-อบ)",
+      "confidence": 92.9
+    }
+  ]
+}
