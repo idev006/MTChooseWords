@@ -31,6 +31,7 @@ Assets
 | `app/ui/main_window.py` | UI แบบ 2 tab สำหรับนำเข้าข้อมูลและสร้างใบงาน, validation, progress และ worker thread |
 | `app/core/extractor.py` | ตรวจเส้นตาราง, อ่านเฉพาะ word cells, แก้ลำดับ Unicode ภาษาไทย และตรวจครบทุกหน้า |
 | `app/core/docx_extractor.py` | อ่านเฉพาะ cell ในตารางของไฟล์ Word `.docx` และผูกคำกับระดับชั้นจากชื่อไฟล์ |
+| `app/core/source_adapters.py` | registry ของ source adapters เพื่อเสียบตัวอ่าน DOCX/PDF/OCR ในอนาคตโดยไม่ผูก UI กับ parser โดยตรง |
 | `app/core/word_source_extractor.py` | เลือก adapter ตามนามสกุลไฟล์และรวม source `.docx`/`.pdf` |
 | `app/core/source_contract.py` | ตรวจ source contract, ระดับชั้น, cell คำ และสร้าง import report |
 | `app/core/import_audit.py` | รวม audit gate สำหรับ UI/command line, สร้าง preview decision และบล็อก REVIEW/FAIL ก่อนเขียนฐานข้อมูล |
@@ -119,3 +120,5 @@ UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต
 หน้าจอหลักแยก workflow เป็น tab `นำเข้าข้อมูล` สำหรับ source/audit/reload และ tab `สร้างใบงาน` สำหรับ grade filter, layout settings และ export PDF เพื่อลดความสับสนและลดโอกาสกดผิดขั้นตอน
 
 งานที่ใช้เวลานานต้องทำผ่าน worker thread ได้แก่ audit/reload คำศัพท์และ export PDF เพื่อให้หน้าจอยังตอบสนองระหว่างประมวลผล ผู้ใช้จะเห็น progress bar และข้อความสถานะของขั้นตอนปัจจุบัน
+
+PDF adapter รายงาน progress ได้ระดับหน้าไฟล์ และมี diagnostic command แยกสำหรับ QA เพื่อดูว่าแต่ละหน้ามี table geometry หรืออ่านข้อความ cell ได้ผิดปกติหรือไม่ โดยไม่ต้อง import เข้าฐานข้อมูล

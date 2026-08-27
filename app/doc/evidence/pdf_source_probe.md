@@ -23,6 +23,17 @@ Finding:
 - Full-folder PDF extraction is expensive because the files are large.
 - Current fail-closed behavior rejects the PDF batch before database import when a page/table cannot be interpreted as valid word cells.
 
+Latest diagnostic run:
+
+```text
+2026-08-27
+Command: scripts/diagnose_pdf_sources.py app/assets/words/pdf --start-page 1 --max-pages 5
+Result: PASS 0, REVIEW 4, NO_WORDS_IN_SAMPLE 2, FAIL 0
+Report: app/doc/evidence/pdf_source_diagnosis.json
+```
+
+Observed examples from the PDF text layer include corrupted output such as `วิสรรชนียຏ`, `ล้ๅา฽ทຌ`, and `ามประ฼ภทของค้า`. These are not safe for production import.
+
 Current certification status:
 
 ```text
@@ -35,3 +46,4 @@ Required before production use:
 2. Add visual review evidence for pages whose text layer contains corrupted characters.
 3. Prefer DOCX source for production word-bank import when available.
 4. Use PDF only when text layer and table geometry pass the source contract without unresolved issues.
+5. Add an OCR-backed PDF adapter only after establishing a human-reviewed expected output set for at least one representative PDF.

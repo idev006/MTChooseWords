@@ -6,11 +6,9 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 from app.core.contracts import WordEntry
-from app.core.docx_extractor import extract_docx_words
-from app.core.extractor import extract_pdf_file_words
 from app.core.review_registry import load_reviewed_suspicions
+from app.core.source_adapters import SourceAdapterRegistry, default_source_registry
 from app.core.source_contract import WordImportReport, collect_word_suspicions, validate_word_entries
-from app.core.word_source_extractor import TableWordSourceExtractor
 
 AuditProgress = Callable[[int, int, str], None]
 
@@ -55,22 +53,14 @@ class SourceAuditResult:
         )
 
 
-def extract_source_file(path: Path) -> list[WordEntry]:
-    if path.suffix.lower() == ".docx":
-        return extract_docx_words(path)
-    if path.suffix.lower() == ".pdf":
-        return extract_pdf_file_words(path)
-    return []
-
-
 def audit_word_sources(
     source: Path | Iterable[Path],
     review_registry_path: Path | None = None,
-    extractor: TableWordSourceExtractor | None = None,
+    registry: SourceAdapterRegistry | None = None,
     progress: AuditProgress | None = None,
 ) -> SourceAuditResult:
-    source_extractor = extractor or TableWordSourceExtractor()
-    sources = source_extractor.sources_from(source)
+    source_registry = registry or default_source_registry()
+    sources = source_registry.sources_from(source)
     if not sources:
         raise ValueError("ไม่พบไฟล์ .docx หรือ .pdf ใน source ที่เลือก")
 
@@ -82,7 +72,13 @@ def audit_word_sources(
         if progress:
             progress(index - 1, len(sources), f"กำลังตรวจ {source_path.name}")
         try:
-            rows = extract_source_file(source_path)
+            def source_progress(done: int, total: int, message: str):
+                if progress:
+                    file_fraction = done / max(total, 1)
+                    overall_done = (index - 1) + file_fraction
+                    progress(int(overall_done * 100), len(sources) * 100, message)
+
+            rows = source_registry.extract(source_path, progress=source_progress)
             report = validate_word_entries(rows)
             suspicions = collect_word_suspicions(rows)
             unresolved = [

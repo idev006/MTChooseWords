@@ -20,6 +20,8 @@
 - ปรับ UI ไม่ให้ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน
 - แยกหน้าจอหลักเป็น 2 tab: นำเข้าข้อมูล และ สร้างใบงาน
 - ย้ายงาน audit/reload คำศัพท์ไปทำใน worker thread และแสดง progress/status เพื่อลดปัญหาหน้าจอค้าง
+- แยก source reader เป็น adapter registry เพื่อให้ test/plug adapter ใหม่ได้ง่ายขึ้น
+- เพิ่ม `scripts/diagnose_pdf_sources.py` สำหรับตรวจ PDF รายหน้าโดยไม่ import เข้า database
 
 ## 2026-07-26 — MVP baseline
 

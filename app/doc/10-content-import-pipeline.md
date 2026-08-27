@@ -61,6 +61,8 @@ Audit command ต้องคืน exit code ไม่ผ่านเมื่�
 
 ทั้ง UI และ command line ใช้ audit gate เดียวกันผ่าน `app/core/import_audit.py` ดังนั้น Reload จะถูกบล็อกก่อนเขียน database หากยังมีไฟล์สถานะ `FAIL` หรือ `REVIEW`
 
+โครงอ่าน source ใช้ adapter registry ใน `app/core/source_adapters.py` เพื่อให้เพิ่มตัวอ่านใหม่ เช่น OCR-backed PDF adapter ได้โดยไม่กระทบ UI, database หรือ audit gate
+
 ทุกครั้งที่ reload ผ่าน UI หรือ command line ระบบสร้างรายงาน:
 
 ```text
@@ -130,3 +132,16 @@ app/doc/evidence/pdf_source_probe.md
 ```
 
 The adapter supports PDF sources that pass the contract, but this specific PDF batch is not yet certified for 100% production import because some files expose corrupted text-layer output and require visual review or source correction.
+
+ใช้คำสั่งนี้เมื่อต้องการวิเคราะห์ PDF แบบรายหน้าโดยไม่ import:
+
+```powershell
+F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_sources.py app\assets\words\pdf --start-page 1 --max-pages 12
+```
+
+Diagnostic status:
+
+- PASS: ตัวอย่างหน้าที่ตรวจอ่านคำได้และไม่พบอักขระน่าสงสัย
+- REVIEW: อ่านได้บางส่วนแต่พบ text-layer น่าสงสัย เช่นอักขระลาวหรืออักขระไทยที่มักเกิดจาก font mapping ผิด
+- NO_WORDS_IN_SAMPLE: ช่วงหน้าที่ตรวจยังไม่เจอตารางคำศัพท์ อาจเป็นคำนำ/สารบัญหรือเลือกช่วงหน้ายังไม่ถูก
+- FAIL: เกิด error ระหว่างตรวจ PDF

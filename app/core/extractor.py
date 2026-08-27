@@ -4,6 +4,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 
 import pdfplumber
 from app.core.contracts import WordEntry
@@ -12,6 +13,7 @@ from app.core.thai_normalizer import normalize_thai_word
 
 
 _NOISE = re.compile(r"^(?:www\.|https?://|[\w.+-]+@[\w.-]+$|โทร$|หน้า\s*\d+|ป\.[ก-ฮ0-9๐-๙]+$)", re.I)
+PdfProgress = Callable[[int, int, str], None]
 
 
 @dataclass(frozen=True)
@@ -19,6 +21,18 @@ class ExtractedPage:
     page_number: int
     words: list[str]
     source_indexes: list[int]
+
+
+@dataclass(frozen=True)
+class PdfPageDiagnostic:
+    page_number: int
+    table_count: int
+    selected_rows: int
+    selected_columns: int
+    indexed_word_count: int
+    legacy_word_count: int
+    sample_words: list[str]
+    error: str | None = None
 
 
 def _cell_text(page, x0: float, x1: float, y0: float, y1: float) -> str:
@@ -100,13 +114,18 @@ def _extract_legacy_columns(page, table) -> tuple[list[str], list[int]]:
     return words, source_indexes
 
 
-def extract_table_pages(pdf: Path) -> list[ExtractedPage]:
+def extract_table_pages(pdf: Path, progress: PdfProgress | None = None) -> list[ExtractedPage]:
     extracted: list[ExtractedPage] = []
     with pdfplumber.open(pdf) as document:
+        total_pages = len(document.pages)
         for page_number, page in enumerate(document.pages, start=1):
+            if progress:
+                progress(page_number - 1, total_pages, f"กำลังอ่านหน้า {page_number}/{total_pages} ของ {pdf.name}")
             tables = page.find_tables(table_settings={"vertical_strategy": "lines", "horizontal_strategy": "lines"})
             table = next((candidate for candidate in tables if len(candidate.rows) >= 5 and len(candidate.rows[0].cells) >= 4), None)
             if table is None:
+                if progress:
+                    progress(page_number, total_pages, f"ไม่พบตารางคำในหน้า {page_number}/{total_pages}")
                 continue
             words, source_indexes = _extract_indexed_pairs(page, table)
             try:
@@ -117,16 +136,18 @@ def extract_table_pages(pdf: Path) -> list[ExtractedPage]:
                 words, source_indexes = legacy_words, legacy_indexes
             if words:
                 extracted.append(ExtractedPage(page_number, words, source_indexes))
+            if progress:
+                progress(page_number, total_pages, f"อ่านหน้า {page_number}/{total_pages} ได้ {len(words)} คำ")
     if not extracted:
         raise ValueError("no worksheet word tables found in PDF")
     return extracted
 
 
-def extract_pdf_file_words(pdf: Path) -> list[WordEntry]:
+def extract_pdf_file_words(pdf: Path, progress: PdfProgress | None = None) -> list[WordEntry]:
     grade = grade_from_name(pdf)
     rows: list[WordEntry] = []
     try:
-        for page in extract_table_pages(pdf):
+        for page in extract_table_pages(pdf, progress=progress):
             rows.extend(
                 WordEntry(word, f"{pdf}#page={page.page_number}", grade, source_index)
                 for source_index, word in zip(page.source_indexes, page.words)
@@ -142,6 +163,42 @@ def extract_pdf_words(directory: Path) -> list[WordEntry]:
         rows.extend(extract_pdf_file_words(pdf))
     validate_word_entries(rows)
     return rows
+
+
+def diagnose_pdf_file(pdf: Path, max_pages: int | None = None, start_page: int = 1, progress: PdfProgress | None = None) -> list[PdfPageDiagnostic]:
+    diagnostics: list[PdfPageDiagnostic] = []
+    with pdfplumber.open(pdf) as document:
+        total_pages = len(document.pages)
+        first_index = max(start_page - 1, 0)
+        last_index = first_index + max_pages if max_pages else total_pages
+        pages = document.pages[first_index:last_index]
+        checked_pages = len(pages)
+        for page_number, page in enumerate(pages, start=first_index + 1):
+            if progress:
+                progress(page_number - first_index - 1, checked_pages, f"กำลังตรวจหน้า {page_number} ของ {pdf.name}")
+            try:
+                tables = page.find_tables(table_settings={"vertical_strategy": "lines", "horizontal_strategy": "lines"})
+                table = next((candidate for candidate in tables if len(candidate.rows) >= 5 and len(candidate.rows[0].cells) >= 4), None)
+                if table is None:
+                    diagnostics.append(PdfPageDiagnostic(page_number, len(tables), 0, 0, 0, 0, []))
+                else:
+                    words, _ = _extract_indexed_pairs(page, table)
+                    legacy_words, _ = _extract_legacy_columns(page, table)
+                    sample = (legacy_words if len(legacy_words) > len(words) else words)[:10]
+                    diagnostics.append(PdfPageDiagnostic(
+                        page_number,
+                        len(tables),
+                        len(table.rows),
+                        len(table.rows[0].cells),
+                        len(words),
+                        len(legacy_words),
+                        sample,
+                    ))
+            except Exception as exc:
+                diagnostics.append(PdfPageDiagnostic(page_number, 0, 0, 0, 0, 0, [], str(exc)))
+            if progress:
+                progress(page_number - first_index, checked_pages, f"ตรวจหน้า {page_number} แล้ว")
+    return diagnostics
 
 
 class PdfTableExtractor:

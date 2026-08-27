@@ -15,6 +15,7 @@
 - [Feature Recommendations](11-feature-recommendations.md)
 - [คู่มือการติดตั้งและใช้งาน](06-user-guide.md)
 - [PDF Source Probe Evidence](evidence/pdf_source_probe.md)
+- [PDF Source Diagnosis JSON](evidence/pdf_source_diagnosis.json)
 - [AI Word Review Evidence](evidence/ai_word_review_2026-08-26.md)
 - [บันทึกการเปลี่ยนแปลง](CHANGELOG.md)
 

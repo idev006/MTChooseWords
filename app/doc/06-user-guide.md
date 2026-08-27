@@ -92,6 +92,12 @@ app/doc/evidence/word_import_report.json
 app/doc/evidence/word_source_audit_report.json
 ```
 
+หากต้องตรวจ PDF โดยไม่ Reload เข้า database ให้ใช้คำสั่ง diagnostic:
+
+```powershell
+F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_sources.py app\assets\words\pdf --start-page 1 --max-pages 12
+```
+
 ## ข้อจำกัดปัจจุบัน
 
 - PDF ที่เป็นภาพสแกนยังไม่รองรับ OCR
