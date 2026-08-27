@@ -101,7 +101,7 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pd
 หากต้องตรวจ OCR เฉพาะหน้า ให้ใช้:
 
 ```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_ocr_cells.py "app\assets\words\pdf\_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf" --page 10
+F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_ocr_cells.py "app\assets\words\pdf\_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf" --page 10 --expected-count 15
 ```
 
 ## ข้อจำกัดปัจจุบัน

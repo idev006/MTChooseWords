@@ -17,6 +17,7 @@
 | T-01J | Import preview | UI ต้องแสดง preview และต้องได้รับการยืนยันก่อนเขียน database |
 | T-01K | Non-blocking import UI | การ audit/reload ต้องทำใน worker thread และรายงาน progress/status ให้ผู้ใช้เห็น |
 | T-01L | Pluggable source adapters | Table source extractor ต้องรับ adapter registry ที่ inject ได้เพื่อให้ทดสอบ/เพิ่ม parser ใหม่ได้ง่าย |
+| T-01M | PDF OCR coverage | หน้า PDF ที่มี expected count ต้องรายงาน coverage และส่งคำที่สงสัยเข้า REVIEW พร้อม evidence |
 | T-02 | PDF ไม่มี text layer | แจ้งปัญหา ไม่สร้างผลลัพธ์ผิดพลาดเงียบ ๆ |
 | T-03 | ขอคำมากกว่าคลัง | แจ้งเตือนและไม่สร้าง PDF |
 | T-04 | หลายหน้า | คำไม่ซ้ำกันข้ามทุกหน้า |
@@ -42,6 +43,7 @@
 - UI และ command line ต้องใช้ audit gate เดียวกันก่อนเขียนฐานข้อมูล
 - งาน audit/reload ใน UI ต้องไม่ทำบน main thread
 - Source extractor ต้องไม่ hard-code parser จนทดสอบด้วย adapter จำลองไม่ได้
+- PDF OCR diagnostic ต้องไม่ถือว่า confidence สูงเพียงอย่างเดียวเป็น production approval
 
 ## 3. Cross-platform Matrix
 
@@ -70,4 +72,4 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 33 tests, audit DOCX lot1 ผ่าน 6 ไฟล์โดยไม่มี REVIEW/FAIL และ Reload DOCX จริงสำเร็จพร้อม import evidence
+Baseline ล่าสุด: pytest ผ่าน 34 tests, audit DOCX lot1 ผ่าน 6 ไฟล์โดยไม่มี REVIEW/FAIL, Reload DOCX จริงสำเร็จพร้อม import evidence และ OCR diagnostic หน้า PDF ตัวอย่างอ่านได้ 93.33%
