@@ -31,6 +31,7 @@
 - [x] เพิ่ม import audit gate กลางสำหรับ UI/command line
 - [x] เพิ่ม import preview ใน UI ก่อนเขียนฐานข้อมูล
 - [x] แยกหน้าจอเป็น tab นำเข้าข้อมูลและ tab สร้างใบงาน
+- [x] ย้าย audit/reload ไปทำใน worker thread พร้อม progress/status
 
 ### In Progress
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable
 
 from app.core.contracts import WordEntry
 from app.core.docx_extractor import extract_docx_words
@@ -11,6 +11,8 @@ from app.core.extractor import extract_pdf_file_words
 from app.core.review_registry import load_reviewed_suspicions
 from app.core.source_contract import WordImportReport, collect_word_suspicions, validate_word_entries
 from app.core.word_source_extractor import TableWordSourceExtractor
+
+AuditProgress = Callable[[int, int, str], None]
 
 
 @dataclass(frozen=True)
@@ -65,6 +67,7 @@ def audit_word_sources(
     source: Path | Iterable[Path],
     review_registry_path: Path | None = None,
     extractor: TableWordSourceExtractor | None = None,
+    progress: AuditProgress | None = None,
 ) -> SourceAuditResult:
     source_extractor = extractor or TableWordSourceExtractor()
     sources = source_extractor.sources_from(source)
@@ -75,7 +78,9 @@ def audit_word_sources(
     files: list[SourceAuditFile] = []
     all_rows: list[WordEntry] = []
 
-    for source_path in sources:
+    for index, source_path in enumerate(sources, start=1):
+        if progress:
+            progress(index - 1, len(sources), f"กำลังตรวจ {source_path.name}")
         try:
             rows = extract_source_file(source_path)
             report = validate_word_entries(rows)
@@ -95,6 +100,8 @@ def audit_word_sources(
             all_rows.extend(rows)
         except Exception as exc:
             files.append(SourceAuditFile(source_file=str(source_path), status="FAIL", error=str(exc)))
+        if progress:
+            progress(index, len(sources), f"ตรวจแล้ว {source_path.name}")
 
     import_report = validate_word_entries(all_rows) if all_rows else None
     summary = SourceAuditSummary(

@@ -149,3 +149,15 @@ def test_import_audit_allows_reviewed_suspicions(tmp_path):
 
     assert audit.can_import is True
     assert audit.summary.pass_count == 1
+
+
+def test_import_audit_reports_progress(tmp_path):
+    source = tmp_path / "บัญชีคำพื้นฐาน ป.1.docx"
+    events = []
+    _write_docx(source)
+
+    audit_word_sources(source, progress=lambda done, total, message: events.append((done, total, message)))
+
+    assert events[0][0] == 0
+    assert events[-1][0] == events[-1][1]
+    assert "บัญชีคำพื้นฐาน ป.1.docx" in events[-1][2]

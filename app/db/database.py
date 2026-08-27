@@ -10,7 +10,7 @@ from app.db.models import Base, Word
 class WordRepository:
     def __init__(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
-        self.engine = create_engine(f"sqlite:///{path.as_posix()}", future=True)
+        self.engine = create_engine(f"sqlite:///{path.as_posix()}", future=True, connect_args={"check_same_thread": False})
         self._ensure_schema()
         Base.metadata.create_all(self.engine)
 

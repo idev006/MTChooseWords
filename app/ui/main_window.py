@@ -54,6 +54,68 @@ class GenerateWorker(QObject):
                 self.failed.emit(traceback.format_exc())
 
 
+class ImportAuditWorker(QObject):
+    progress = Signal(int, str)
+    done = Signal(object)
+    failed = Signal(str)
+
+    def __init__(self, sources, review_registry_path: Path, audit_report_path: Path):
+        super().__init__()
+        self.sources = sources
+        self.review_registry_path = review_registry_path
+        self.audit_report_path = audit_report_path
+
+    @Slot()
+    def run(self):
+        try:
+            def update(done: int, total: int, message: str):
+                percent = int(done * 90 / max(total, 1))
+                self.progress.emit(max(5, percent), message)
+
+            self.progress.emit(3, "กำลังเริ่มตรวจ source คำศัพท์")
+            audit = audit_word_sources(self.sources, self.review_registry_path, progress=update)
+            self.progress.emit(95, "กำลังบันทึกรายงาน audit")
+            write_audit_report(self.audit_report_path, audit)
+            self.progress.emit(100, "ตรวจ source เสร็จแล้ว")
+            self.done.emit(audit)
+        except Exception:
+            self.failed.emit(traceback.format_exc())
+
+
+class WordImportWorker(QObject):
+    progress = Signal(int, str)
+    done = Signal(int, str)
+    failed = Signal(str)
+
+    def __init__(self, audit, repository: WordStore, clear_before_import: bool, import_report_path: Path):
+        super().__init__()
+        self.audit = audit
+        self.repository = repository
+        self.clear_before_import = clear_before_import
+        self.import_report_path = import_report_path
+
+    @Slot()
+    def run(self):
+        try:
+            if self.audit.import_report is None:
+                raise ValueError("ไม่พบรายงานตรวจรับสำหรับนำเข้าคำ")
+            self.progress.emit(10, "กำลังเตรียมนำคำเข้า database")
+            if self.clear_before_import:
+                self.progress.emit(35, "กำลังล้างคลังคำเดิมและนำเข้าชุดใหม่")
+                count = self.repository.replace_words(self.audit.rows)
+                action = "อัปเดต"
+            else:
+                self.progress.emit(35, "กำลังเพิ่มคำเข้า database")
+                count = self.repository.add_words(self.audit.rows)
+                action = "เพิ่ม"
+            self.progress.emit(85, "กำลังบันทึกรายงาน import")
+            write_import_report(self.import_report_path, self.audit.import_report)
+            self.progress.emit(100, "นำเข้าคำเสร็จแล้ว")
+            self.done.emit(count, action)
+        except Exception:
+            self.failed.emit(traceback.format_exc())
+
+
 class MainWindow(QMainWindow):
     def __init__(self, root: Path, repository: WordStore | None = None, extractor: WordExtractor | None = None, exporter: PdfExporter | None = None):
         super().__init__()
@@ -297,41 +359,88 @@ class MainWindow(QMainWindow):
         return "\n".join(lines)
 
     def _refresh_words(self):
-        try:
-            audit = audit_word_sources(self._selected_word_sources(), self._review_registry_path())
-            write_audit_report(self._audit_report_path(), audit)
-            if not audit.can_import or audit.import_report is None:
-                QMessageBox.warning(self, "ยัง Reload ไม่ได้", self._blocked_files_message(audit))
-                self.status.showMessage("Reload ถูกหยุดเพื่อรอตรวจรับ source")
-                return
+        self._set_import_busy(True, "กำลังตรวจ source คำศัพท์ กรุณารอสักครู่...")
+        self.import_audit_thread = QThread()
+        self.import_audit_worker = ImportAuditWorker(
+            self._selected_word_sources(),
+            self._review_registry_path(),
+            self._audit_report_path(),
+        )
+        self.import_audit_worker.moveToThread(self.import_audit_thread)
+        self.import_audit_thread.started.connect(self.import_audit_worker.run)
+        self.import_audit_worker.progress.connect(self._on_progress)
+        self.import_audit_worker.done.connect(self._audit_finished)
+        self.import_audit_worker.failed.connect(self._import_failed)
+        self.import_audit_worker.done.connect(self.import_audit_thread.quit)
+        self.import_audit_worker.failed.connect(self.import_audit_thread.quit)
+        self.import_audit_thread.finished.connect(self.import_audit_worker.deleteLater)
+        self.import_audit_thread.finished.connect(self.import_audit_thread.deleteLater)
+        self.import_audit_thread.start()
 
-            answer = QMessageBox.question(
-                self,
-                "ยืนยัน Reload คำ",
-                self._preview_message(audit.summary.total_cells, audit.summary.unique_words, audit.source_count),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-            if answer != QMessageBox.Yes:
-                self.status.showMessage("ยกเลิก Reload คำ")
-                return
+    def _set_import_busy(self, busy: bool, message: str = ""):
+        self.refresh.setEnabled(not busy)
+        self.source_picker.setEnabled(not busy)
+        self.clear_before_reload.setEnabled(not busy)
+        self.save.setEnabled(not busy)
+        self.output.setEnabled(not busy)
+        self.generate.setEnabled(not busy)
+        self.progress.setRange(0, 100)
+        self.progress.setValue(0 if busy else self.progress.value())
+        if message:
+            self.status.showMessage(message)
 
-            if self.clear_before_reload.isChecked():
-                count = self.repo.replace_words(audit.rows)
-                action = "อัปเดต"
-            else:
-                count = self.repo.add_words(audit.rows)
-                action = "เพิ่ม"
-            write_import_report(self._import_report_path(), audit.import_report)
-            if hasattr(self.repo, "count_by_grade"):
-                by_grade = self.repo.count_by_grade()
-                details = " | ".join(f"ป.{grade}: {by_grade.get(grade, 0)}" for grade in range(1, 7))
-                self.info.setText(f"{action}คำสำเร็จ: {count} คำ ({details})")
-            else:
-                self.info.setText(f"{action}คำสำเร็จ: {count} คำ")
-            self.status.showMessage("อัปเดตคลังคำสำเร็จ")
-        except Exception as exc:
-            QMessageBox.critical(self, "สกัดคำไม่สำเร็จ", str(exc))
+    def _audit_finished(self, audit):
+        self.progress.setValue(100)
+        if not audit.can_import or audit.import_report is None:
+            self._set_import_busy(False)
+            QMessageBox.warning(self, "ยัง Reload ไม่ได้", self._blocked_files_message(audit))
+            self.status.showMessage("Reload ถูกหยุดเพื่อรอตรวจรับ source")
+            return
+
+        answer = QMessageBox.question(
+            self,
+            "ยืนยัน Reload คำ",
+            self._preview_message(audit.summary.total_cells, audit.summary.unique_words, audit.source_count),
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if answer != QMessageBox.Yes:
+            self._set_import_busy(False)
+            self.status.showMessage("ยกเลิก Reload คำ")
+            return
+        self._start_word_import(audit)
+
+    def _start_word_import(self, audit):
+        self.progress.setValue(0)
+        self.status.showMessage("กำลังนำคำเข้า database...")
+        self.word_import_thread = QThread()
+        self.word_import_worker = WordImportWorker(audit, self.repo, self.clear_before_reload.isChecked(), self._import_report_path())
+        self.word_import_worker.moveToThread(self.word_import_thread)
+        self.word_import_thread.started.connect(self.word_import_worker.run)
+        self.word_import_worker.progress.connect(self._on_progress)
+        self.word_import_worker.done.connect(self._word_import_finished)
+        self.word_import_worker.failed.connect(self._import_failed)
+        self.word_import_worker.done.connect(self.word_import_thread.quit)
+        self.word_import_worker.failed.connect(self.word_import_thread.quit)
+        self.word_import_thread.finished.connect(self.word_import_worker.deleteLater)
+        self.word_import_thread.finished.connect(self.word_import_thread.deleteLater)
+        self.word_import_thread.start()
+
+    def _word_import_finished(self, count: int, action: str):
+        self._set_import_busy(False)
+        self.progress.setValue(100)
+        if hasattr(self.repo, "count_by_grade"):
+            by_grade = self.repo.count_by_grade()
+            details = " | ".join(f"ป.{grade}: {by_grade.get(grade, 0)}" for grade in range(1, 7))
+            self.info.setText(f"{action}คำสำเร็จ: {count} คำ ({details})")
+        else:
+            self.info.setText(f"{action}คำสำเร็จ: {count} คำ")
+        self.status.showMessage("อัปเดตคลังคำสำเร็จ")
+
+    def _import_failed(self, details: str):
+        self._set_import_busy(False)
+        self.status.showMessage("Reload ไม่สำเร็จ")
+        QMessageBox.critical(self, "Reload ไม่สำเร็จ", details)
 
     def _selected_grades(self) -> list[int]:
         return [grade for grade, checkbox in self.grade_checks.items() if checkbox.isChecked()]
