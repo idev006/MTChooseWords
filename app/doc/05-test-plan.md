@@ -72,4 +72,4 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 34 tests, audit DOCX lot1 ผ่าน 6 ไฟล์โดยไม่มี REVIEW/FAIL, Reload DOCX จริงสำเร็จพร้อม import evidence และ OCR diagnostic หน้า PDF ตัวอย่างอ่านได้ 93.33%
+Baseline ล่าสุด: pytest ผ่าน 35 tests, audit DOCX lot1 ผ่าน 6 ไฟล์โดยไม่มี REVIEW/FAIL, Reload DOCX จริงสำเร็จพร้อม import evidence, OCR diagnostic หน้า PDF ป.6 ตัวอย่างอ่านได้ 100% ของ expected 15 คำ และ folder OCR probe สร้างคิว REVIEW พร้อมหลักฐานโดยไม่ import คำสงสัย

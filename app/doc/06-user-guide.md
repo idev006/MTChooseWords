@@ -104,6 +104,14 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pd
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_ocr_cells.py "app\assets\words\pdf\_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf" --page 10 --expected-count 15
 ```
 
+หากต้องอ่าน PDF ทั้งโฟลเดอร์เพื่อสร้างคิวตรวจ โดยยังไม่ Reload เข้า database ให้ใช้:
+
+```powershell
+F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\read_pdf_ocr_folder.py app\assets\words\pdf --start-page 10 --max-pages-per-file 1 --max-cells-per-page 80 --page-timeout-seconds 45
+```
+
+โปรแกรมจะสร้างรายงาน `app/doc/evidence/pdf_ocr_folder_read_report.json` และไฟล์ `app/doc/evidence/pdf_ocr_review_queue.csv` ให้ผู้ใช้เปิดตรวจรายการที่ยังไม่มั่นใจพร้อมหลักฐานรูป cell
+
 ## ข้อจำกัดปัจจุบัน
 
 - PDF ที่เป็นภาพสแกนยังไม่รองรับ OCR

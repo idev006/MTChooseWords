@@ -17,6 +17,8 @@
 - [PDF Source Probe Evidence](evidence/pdf_source_probe.md)
 - [PDF Source Diagnosis JSON](evidence/pdf_source_diagnosis.json)
 - [PDF OCR Cell Diagnosis JSON](evidence/pdf_ocr_cell_diagnosis.json)
+- [PDF OCR Folder Read Report](evidence/pdf_ocr_folder_read_report.json)
+- [PDF OCR Review Queue CSV](evidence/pdf_ocr_review_queue.csv)
 - [AI Word Review Evidence](evidence/ai_word_review_2026-08-26.md)
 - [บันทึกการเปลี่ยนแปลง](CHANGELOG.md)
 
@@ -31,4 +33,4 @@
 
 ## สถานะเอกสาร
 
-เอกสารนี้ครอบคลุม baseline ของ MVP, DOCX/PDF table source pipeline และ import audit/preview gate ณ วันที่ 2026-08-26
+เอกสารนี้ครอบคลุม baseline ของ MVP, DOCX/PDF table source pipeline, import audit/preview gate และ PDF OCR review queue ณ วันที่ 2026-08-27

@@ -24,6 +24,8 @@
 - เพิ่ม `scripts/diagnose_pdf_sources.py` สำหรับตรวจ PDF รายหน้าโดยไม่ import เข้า database
 - เพิ่ม OCR cell diagnosis สำหรับตรวจ PDF ที่ text layer เพี้ยน โดยยังไม่เปิด import production แบบ OCR จนกว่าจะมี expected output ตรวจรับ
 - เพิ่ม coverage calculation ให้ OCR cell diagnosis เพื่อวัดเกณฑ์อ่านได้อย่างน้อย 90% ต่อหน้าที่มี expected count
+- เพิ่มคำสั่งอ่าน PDF ทั้งโฟลเดอร์แบบ OCR review queue พร้อม timeout ต่อหน้า, JSON report, CSV สำหรับผู้ใช้ตรวจ และ evidence crop image
+- ปรับ OCR diagnostic ให้เก็บคำที่อ่านได้แต่เลขลำดับน่าสงสัยเข้า REVIEW พร้อมหลักฐาน แทนการตัดทิ้ง
 
 ## 2026-07-26 — MVP baseline
 

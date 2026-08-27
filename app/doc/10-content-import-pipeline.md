@@ -146,6 +146,22 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pd
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_ocr_cells.py "app\assets\words\pdf\_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf" --page 10 --expected-count 15
 ```
 
+เมื่อต้องการสั่งอ่าน PDF ทั้งโฟลเดอร์ในโหมดตรวจสอบโดยไม่ import:
+
+```powershell
+F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\read_pdf_ocr_folder.py app\assets\words\pdf --start-page 10 --max-pages-per-file 1 --max-cells-per-page 80 --page-timeout-seconds 45
+```
+
+ผลลัพธ์จะถูกบันทึกที่:
+
+```text
+app/doc/evidence/pdf_ocr_folder_read_report.json
+app/doc/evidence/pdf_ocr_review_queue.csv
+app/doc/evidence/pdf_ocr_cells
+```
+
+`word_candidate_count` คือจำนวนคำที่ OCR อ่านออกมา ส่วน `review_queue_count` คือจำนวนรายการที่ต้องตรวจรวมทั้งคำที่สงสัยและหน้าที่ timeout/error
+
 Diagnostic status:
 
 - PASS: ตัวอย่างหน้าที่ตรวจอ่านคำได้และไม่พบอักขระน่าสงสัย

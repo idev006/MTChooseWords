@@ -18,6 +18,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--expected-count", type=int, default=None, help="Expected visible word cells on this page for coverage calculation.")
     parser.add_argument("--min-coverage", type=float, default=0.9)
     parser.add_argument("--evidence-dir", type=Path, default=None, help="Optional directory for cropped cell evidence images.")
+    parser.add_argument("--evidence-mode", choices=["review", "all", "none"], default="all")
     parser.add_argument("--output", type=Path, default=None)
     return parser.parse_args()
 
@@ -26,7 +27,8 @@ def main() -> int:
     args = _parse_args()
     root = Path(__file__).resolve().parents[1]
     evidence_dir = args.evidence_dir or root / "app/doc/evidence/pdf_ocr_cells"
-    rows = diagnose_pdf_ocr_cells(args.pdf, args.page, args.max_cells, evidence_dir=evidence_dir)
+    evidence_statuses = None if args.evidence_mode == "all" else {"REVIEW"} if args.evidence_mode == "review" else set()
+    rows = diagnose_pdf_ocr_cells(args.pdf, args.page, args.max_cells, evidence_dir=evidence_dir, evidence_statuses=evidence_statuses)
     output = args.output or root / "app/doc/evidence/pdf_ocr_cell_diagnosis.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     coverage = len(rows) / args.expected_count if args.expected_count else None
