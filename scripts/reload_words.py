@@ -1,4 +1,4 @@
-"""Reload worksheet words from production DOCX table sources into SQLite."""
+"""Reload worksheet words from production DOCX/TXT sources into SQLite."""
 import argparse
 from pathlib import Path
 import sys
@@ -12,8 +12,8 @@ from app.db.database import WordRepository
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Reload DOCX table word sources. PDF import is disabled for production.")
-    parser.add_argument("sources", nargs="*", type=Path, help="Optional .docx files or source directories.")
+    parser = argparse.ArgumentParser(description="Reload DOCX/TXT word sources. PDF import is disabled for production.")
+    parser.add_argument("sources", nargs="*", type=Path, help="Optional .docx/.txt files or source directories.")
     parser.add_argument("--append", action="store_true", help="Add words without clearing the existing database.")
     parser.add_argument("--clear-all", action="store_true", help="Clear all words before importing. This is the default.")
     return parser.parse_args()

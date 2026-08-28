@@ -29,10 +29,10 @@
 - ผลกระทบ: บางกรณีพื้นที่ว่างอาจถูกใช้ได้ไม่เต็มประสิทธิภาพ
 - Next review: พิจารณา polygon/SAT เมื่อรองรับ 100+ คำต่อหน้า
 
-## ADR-005: ใช้ DOCX เป็น production word-bank source และปิด PDF import ชั่วคราว
+## ADR-005: ใช้ DOCX/TXT เป็น production word-bank source และปิด PDF import ชั่วคราว
 
 - Status: Accepted
-- Decision: Reload production ใช้ adapter ที่รองรับเฉพาะ `.docx`; PDF ถูกย้ายไปเป็น diagnostic-only
-- เหตุผล: `.docx` อ่าน table XML ได้โดยตรงและตรวจรับได้ดีกว่า ส่วน PDF/OCR ยังมีความเสี่ยงจาก text-layer mapping, timeout และ cell evidence ที่ต้องใช้คนตรวจ
-- ผลกระทบ: UI และ CLI จะไม่เลือกหรือนำเข้า PDF เข้าฐานข้อมูล แต่ยังคงเครื่องมือวิเคราะห์ PDF สำหรับสร้างหลักฐานและวางแผน approval workflow ในอนาคต
+- Decision: Reload production ใช้ adapter ที่รองรับเฉพาะ `.docx` และ `.txt`; PDF ถูกย้ายไปเป็น diagnostic-only
+- เหตุผล: `.docx` อ่าน table XML ได้โดยตรง ส่วน `.txt` visual-verified อ่านได้หนึ่งคำต่อบรรทัดและตรวจนับง่ายกว่า PDF/OCR ที่มีความเสี่ยงจาก text-layer mapping, timeout และ cell evidence ที่ต้องใช้คนตรวจ
+- ผลกระทบ: UI และ CLI จะเลือกหรือนำเข้าเฉพาะ DOCX/TXT เข้าฐานข้อมูล แต่ยังคงเครื่องมือวิเคราะห์ PDF สำหรับสร้างหลักฐานและวางแผน approval workflow ในอนาคต
 - Evidence: `app/doc/evidence/word_import_report.json`

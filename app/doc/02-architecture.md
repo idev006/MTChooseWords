@@ -11,6 +11,7 @@ Application Services
     ├── Table Word Source Extractor
     ├── PDF Diagnostic Extractor
     ├── DOCX Table Extractor
+    ├── TXT Line Extractor
     ├── Source Contract Validator
     ├── Word Repository
     └── PDF Generator / Layout Engine
@@ -20,7 +21,7 @@ Persistence
     └── TOML configuration
     ↓
 Assets
-    ├── Source DOCX word tables
+    ├── Source DOCX/TXT word tables
     └── User-selectable fonts
 ```
 
@@ -31,8 +32,9 @@ Assets
 | `app/ui/main_window.py` | UI แบบ 2 tab สำหรับนำเข้าข้อมูลและสร้างใบงาน, validation, progress และ worker thread |
 | `app/core/extractor.py` | ตรวจเส้นตาราง, อ่านเฉพาะ word cells, แก้ลำดับ Unicode ภาษาไทย และตรวจครบทุกหน้า |
 | `app/core/docx_extractor.py` | อ่านเฉพาะ cell ในตารางของไฟล์ Word `.docx` และผูกคำกับระดับชั้นจากชื่อไฟล์ |
-| `app/core/source_adapters.py` | registry ของ source adapters โดย production registry เปิดเฉพาะ DOCX และแยก diagnostic registry สำหรับ PDF |
-| `app/core/word_source_extractor.py` | เลือก adapter production ตามนามสกุลไฟล์และรวม source `.docx` |
+| `app/core/text_extractor.py` | อ่านไฟล์ `.txt` แบบหนึ่งคำต่อหนึ่งบรรทัดและผูกคำกับระดับชั้นจากชื่อไฟล์ |
+| `app/core/source_adapters.py` | registry ของ source adapters โดย production registry เปิด DOCX/TXT และแยก diagnostic registry สำหรับ PDF |
+| `app/core/word_source_extractor.py` | เลือก adapter production ตามนามสกุลไฟล์และรวม source `.docx`/`.txt` |
 | `app/core/source_contract.py` | ตรวจ source contract, ระดับชั้น, cell คำ และสร้าง import report |
 | `app/core/import_audit.py` | รวม audit gate สำหรับ UI/command line, สร้าง preview decision และบล็อก REVIEW/FAIL ก่อนเขียนฐานข้อมูล |
 | `app/core/pdf_generator.py` | สร้างหน้า A4, วัดขนาดคำ, หมุน และจัดวาง |
@@ -70,16 +72,20 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 
 ## 6. Table extraction contract
 
-### DOCX word-bank contract
+### DOCX/TXT word-bank contract
 
 - แหล่งข้อมูลหลักใหม่อยู่ที่ `app/assets/words/lot1`
-- อ่านเฉพาะไฟล์ `.docx`; ไฟล์ `.doc` และ `.pdf` ในโฟลเดอร์เดียวกันถูกข้ามใน production import
+- แหล่งข้อมูล text verified อยู่ที่ `app/assets/words/text`
+- อ่านเฉพาะไฟล์ `.docx` และ `.txt`; ไฟล์ `.doc` และ `.pdf` ในโฟลเดอร์เดียวกันถูกข้ามใน production import
 - อ่านเฉพาะข้อความใน table cell ที่จับคู่เลขลำดับกับคำศัพท์ได้
+- สำหรับ `.txt` อ่านหนึ่งคำต่อหนึ่งบรรทัด และใช้เลขบรรทัดเป็น source index
 - ไม่อ่านข้อความหัวเรื่อง ย่อหน้า หรือคำบรรยายนอกตาราง
 - ระดับชั้นอ่านจากชื่อไฟล์ เช่น `ป.1` ถึง `ป.6`
+- ตัวอย่างชื่อไฟล์ text: `คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt` หมายถึง ป.1
 - คำซ้ำภายในระดับชั้นถูกเก็บเป็นคำไม่ซ้ำในฐานข้อมูลตาม normalized key
 - `reload_words.py` และ UI ต้องผ่าน `import_audit.py` ก่อนเขียนฐานข้อมูล
 - Reload ที่ผ่าน audit จะสร้าง evidence report ที่ `app/doc/evidence/word_import_report.json`
+- ทุกครั้งที่ audit อ่าน source จะสร้าง `mtchoosewords_import_journal.json` ในโฟลเดอร์ที่อ่าน เพื่อบันทึก source, summary, PASS/REVIEW/FAIL และ error
 - UI รองรับการเลือกไฟล์ source เฉพาะชุด เลือกระหว่าง clear-all หรือ append และแสดง preview ก่อนยืนยันนำเข้า
 
 ### PDF diagnostic-only contract
@@ -115,7 +121,7 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 
 Pipeline ห้าม import ข้อมูลที่ไม่ผ่าน source contract หากตรวจพบ source ผิดรูปแบบ ต้องหยุดและแจ้งปัญหาแทนการเก็บคำที่อาจผิดลงฐานข้อมูล
 
-DOCX เป็น production path เดียวสำหรับความถูกต้องของคำ เพราะอ่านจาก XML table โดยตรง ส่วน PDF ถูกจำกัดเป็น diagnostic-only เพื่อป้องกันคำผิดเข้าสู่ฐานข้อมูล
+DOCX และ TXT เป็น production path สำหรับความถูกต้องของคำ เพราะอ่านจากโครงสร้างที่ตรวจรับได้โดยตรง ส่วน PDF ถูกจำกัดเป็น diagnostic-only เพื่อป้องกันคำผิดเข้าสู่ฐานข้อมูล
 
 UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน การเขียนฐานข้อมูลจะเกิดเฉพาะเมื่อผู้ใช้กด Reload และยืนยัน preview หลัง audit ผ่านแล้ว
 

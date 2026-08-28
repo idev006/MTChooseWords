@@ -1,4 +1,4 @@
-"""Audit production DOCX word sources and write review evidence without importing."""
+"""Audit production DOCX/TXT word sources and write review evidence without importing."""
 import argparse
 import json
 from pathlib import Path
@@ -11,8 +11,8 @@ from app.core.import_audit import audit_word_sources, write_audit_report
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Audit DOCX table word sources before import. PDF import is disabled for production.")
-    parser.add_argument("sources", nargs="*", type=Path, help="Optional .docx files or source directories.")
+    parser = argparse.ArgumentParser(description="Audit DOCX/TXT word sources before import. PDF import is disabled for production.")
+    parser.add_argument("sources", nargs="*", type=Path, help="Optional .docx/.txt files or source directories.")
     parser.add_argument("--output", type=Path, default=None, help="Audit report JSON path.")
     return parser.parse_args()
 

@@ -1,12 +1,32 @@
 {
-  "source_count": 6,
+  "timestamp_utc": "2026-08-28T11:42:23.414695+00:00",
+  "production_source_formats": [
+    ".docx",
+    ".txt"
+  ],
+  "diagnostic_only_formats": [
+    ".pdf"
+  ],
+  "inputs": [
+    "app\\assets\\words\\text"
+  ],
+  "supported_sources": [
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป2_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป4_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt"
+  ],
   "summary": {
-    "pass": 6,
-    "review": 0,
-    "fail": 0,
+    "pass_count": 6,
+    "review_count": 0,
+    "fail_count": 0,
     "total_cells": 8192,
     "unique_words": 8192
   },
+  "can_import": true,
+  "error": null,
   "files": [
     {
       "source_file": "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",

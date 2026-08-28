@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Iterable
 
@@ -53,6 +54,45 @@ class SourceAuditResult:
         )
 
 
+def _input_paths(source: Path | Iterable[Path]) -> list[Path]:
+    return [source] if isinstance(source, Path) else list(source)
+
+
+def _journal_folders(paths: list[Path]) -> list[Path]:
+    folders: set[Path] = set()
+    for path in paths:
+        folders.add(path if path.is_dir() else path.parent)
+    return sorted(folders)
+
+
+def _write_source_journals(
+    folders: list[Path],
+    input_paths: list[Path],
+    supported_sources: list[Path],
+    result: SourceAuditResult | None,
+    error: str | None = None,
+) -> None:
+    supported_names = {str(path) for path in supported_sources}
+    files_payload = [asdict(item) for item in result.files] if result else []
+    payload = {
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "production_source_formats": [".docx", ".txt"],
+        "diagnostic_only_formats": [".pdf"],
+        "inputs": [str(path) for path in input_paths],
+        "supported_sources": sorted(supported_names),
+        "summary": asdict(result.summary) if result else None,
+        "can_import": result.can_import if result else False,
+        "error": error,
+        "files": files_payload,
+    }
+    for folder in folders:
+        if folder.exists() and folder.is_dir():
+            (folder / "mtchoosewords_import_journal.json").write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
+
 def audit_word_sources(
     source: Path | Iterable[Path],
     review_registry_path: Path | None = None,
@@ -60,9 +100,13 @@ def audit_word_sources(
     progress: AuditProgress | None = None,
 ) -> SourceAuditResult:
     source_registry = registry or default_source_registry()
+    requested_paths = _input_paths(source)
+    journal_folders = _journal_folders(requested_paths)
     sources = source_registry.sources_from(source)
     if not sources:
-        raise ValueError("ไม่พบไฟล์ .docx ใน source ที่เลือก; PDF ถูกปิดสำหรับ production import ชั่วคราว")
+        message = "ไม่พบไฟล์ .docx หรือ .txt ใน source ที่เลือก; PDF ถูกปิดสำหรับ production import ชั่วคราว"
+        _write_source_journals(journal_folders, requested_paths, sources, None, error=message)
+        raise ValueError(message)
 
     reviewed = load_reviewed_suspicions(review_registry_path) if review_registry_path else set()
     files: list[SourceAuditFile] = []
@@ -107,7 +151,9 @@ def audit_word_sources(
         total_cells=sum(item.total_cells for item in files),
         unique_words=import_report.unique_words if import_report else 0,
     )
-    return SourceAuditResult(len(sources), summary, files, all_rows, import_report)
+    result = SourceAuditResult(len(sources), summary, files, all_rows, import_report)
+    _write_source_journals(journal_folders, requested_paths, sources, result)
+    return result
 
 
 def write_audit_report(path: Path, result: SourceAuditResult) -> None:

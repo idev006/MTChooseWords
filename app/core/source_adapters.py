@@ -7,6 +7,7 @@ from typing import Callable, Iterable, Protocol
 from app.core.contracts import WordEntry
 from app.core.docx_extractor import extract_docx_words
 from app.core.extractor import extract_pdf_file_words
+from app.core.text_extractor import extract_text_words
 
 SourceProgress = Callable[[int, int, str], None]
 
@@ -36,6 +37,19 @@ class PdfSourceAdapter:
 
     def extract(self, path: Path, progress: SourceProgress | None = None) -> list[WordEntry]:
         return extract_pdf_file_words(path, progress=progress)
+
+
+@dataclass(frozen=True)
+class TextSourceAdapter:
+    extensions: set[str]
+
+    def extract(self, path: Path, progress: SourceProgress | None = None) -> list[WordEntry]:
+        if progress:
+            progress(0, 1, f"กำลังอ่าน TXT {path.name}")
+        rows = extract_text_words(path)
+        if progress:
+            progress(1, 1, f"อ่าน TXT แล้ว {path.name}")
+        return rows
 
 
 class SourceAdapterRegistry:
@@ -71,12 +85,14 @@ class SourceAdapterRegistry:
 def production_source_registry() -> SourceAdapterRegistry:
     return SourceAdapterRegistry([
         DocxSourceAdapter({".docx"}),
+        TextSourceAdapter({".txt"}),
     ])
 
 
 def diagnostic_source_registry() -> SourceAdapterRegistry:
     return SourceAdapterRegistry([
         DocxSourceAdapter({".docx"}),
+        TextSourceAdapter({".txt"}),
         PdfSourceAdapter({".pdf"}),
     ])
 

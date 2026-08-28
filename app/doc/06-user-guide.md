@@ -43,12 +43,12 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --no
 - `นำเข้าข้อมูล`: เลือกไฟล์คำศัพท์และ Reload คำเข้า database
 - `สร้างใบงาน`: เลือกระดับชั้น ตั้งค่าหน้าเอกสาร และสร้าง PDF
 
-1. ใส่ไฟล์คำศัพท์ `.docx` ที่เป็นตารางใน `app/assets/words/lot1`
+1. ใส่ไฟล์คำศัพท์ `.docx` ที่เป็นตารางใน `app/assets/words/lot1` หรือ `.txt` แบบหนึ่งคำต่อบรรทัดใน `app/assets/words/text`
 2. ใส่ฟอนท์ที่รองรับภาษาไทยใน `app/assets/fonts`
 3. ตั้งชื่อไฟล์ให้มีระดับชั้น เช่น `ป.1`, `ป.2` หรือ `P3`
 4. ที่ tab `นำเข้าข้อมูล` เลือกไฟล์คำศัพท์เฉพาะชุด หรือปล่อยค่าเริ่มต้นเพื่อใช้ทั้งโฟลเดอร์
 5. เลือกว่าจะ “ล้างคลังคำก่อน Reload” หรือ append เข้าไปโดยไม่ล้างของเดิม
-6. กด “Reload คำจาก DOCX” ระบบจะตรวจ source ก่อน หากผ่านจะแสดง preview ให้ยืนยัน
+6. กด “Reload คำจาก DOCX/TXT” ระบบจะตรวจ source ก่อน หากผ่านจะแสดง preview ให้ยืนยัน
 7. ยืนยัน preview เพื่อให้ระบบนำคำเข้า database หรือยกเลิกหากจำนวนไม่ตรงกับที่คาด
 8. ไปที่ tab `สร้างใบงาน`
 9. เลือก checkbox ระดับชั้น ป.1-ป.6 ที่ต้องการใช้
@@ -84,6 +84,12 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\reload_word
 
 ```text
 app/doc/evidence/word_import_report.json
+```
+
+ทุกครั้งที่อ่าน source ระบบจะสร้าง journal ในโฟลเดอร์ source เช่น:
+
+```text
+app/assets/words/text/mtchoosewords_import_journal.json
 ```
 
 รายงาน audit ก่อน import อยู่ที่:

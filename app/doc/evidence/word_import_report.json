@@ -1,21 +1,21 @@
 {
-  "total_cells": 6182,
-  "unique_words": 6173,
+  "total_cells": 8192,
+  "unique_words": 8192,
   "counts_by_grade": {
-    "1": 708,
-    "2": 1098,
-    "3": 1206,
-    "4": 1270,
-    "5": 1048,
-    "6": 852
+    "1": 1229,
+    "2": 1445,
+    "3": 1473,
+    "4": 1422,
+    "5": 1472,
+    "6": 1151
   },
-  "duplicate_cells": 9,
+  "duplicate_cells": 0,
   "source_files": [
-    "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.1.docx",
-    "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.2.docx",
-    "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
-    "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.4.docx",
-    "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
-    "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx"
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป2_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป4_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
+    "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt"
   ]
 }

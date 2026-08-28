@@ -1,11 +1,20 @@
 # Changelog
 
+## 2026-08-28 — TXT source import and source journals
+
+- เพิ่มตัวอ่าน `.txt` แบบหนึ่งคำต่อหนึ่งบรรทัด โดยอ่านระดับชั้นจากชื่อไฟล์ เช่น `คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt`
+- เพิ่ม TXT adapter เข้า production source registry คู่กับ DOCX โดย PDF ยังเป็น diagnostic-only
+- เพิ่ม source-folder journal `mtchoosewords_import_journal.json` ทุกครั้งที่ audit อ่าน source
+- ปรับ UI file picker และปุ่ม Reload เป็น DOCX/TXT
+- ทดสอบ source จริง `app/assets/words/text` ผ่าน 6 ไฟล์ ได้ 8,192 unique words และไม่มี duplicate
+- เพิ่ม automated tests สำหรับ TXT extraction, production registry และ journal
+
 ## 2026-08-28 — Disable PDF production import
 
 - ปิด PDF จาก production import ชั่วคราวเพื่อป้องกันคำที่ยังไม่ผ่านการตรวจรับเข้าสู่ฐานข้อมูล
-- ปรับ default source registry ให้รับเฉพาะ `.docx` สำหรับ UI, audit และ reload
+- ปรับ default source registry ให้ไม่รับ PDF สำหรับ UI, audit และ reload
 - คงเครื่องมือ PDF diagnosis/OCR review queue ไว้สำหรับ QA และสร้างหลักฐาน โดยไม่ import เข้า database
-- ปรับ UI file picker และข้อความ Reload ให้เป็น DOCX-only
+- ปรับ UI file picker และข้อความ Reload ให้ไม่เสนอ PDF เป็น production source
 - เพิ่ม automated tests ยืนยันว่า default importer ไม่รับ PDF แต่ diagnostic registry ยังใช้ PDF adapter ได้
 
 ## 2026-08-26 — DOCX word-bank and grade selection

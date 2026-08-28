@@ -2,11 +2,12 @@
 
 ## 1. Supported source formats
 
-โปรแกรมรองรับ source แบบตารางสำหรับ production 1 รูปแบบ:
+โปรแกรมรองรับ source สำหรับ production 2 รูปแบบ:
 
 | รูปแบบ | สถานะ | เงื่อนไข source |
 |---|---|---|
 | `.docx` | Production path | ไฟล์ Word ต้องมีคำศัพท์อยู่ในตารางแบบคู่คอลัมน์ `ลำดับ/คำ` หรือ `คำที่/คำ` และชื่อไฟล์ต้องมีระดับชั้น ป.1-ป.6 |
+| `.txt` | Production path | ไฟล์ text UTF-8 ต้องมีหนึ่งคำต่อหนึ่งบรรทัด และชื่อไฟล์ต้องมีระดับชั้น ป.1-ป.6 เช่น `คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt` |
 
 PDF ถูกปิดจาก production import ชั่วคราว และใช้ได้เฉพาะ diagnostic/review command เพราะยังไม่มี approval workflow ที่รับประกันความถูกต้องได้พอสำหรับงานการศึกษา
 
@@ -28,7 +29,7 @@ Importer อ่านเฉพาะ cell ในตารางที่จั�
 
 การ import ต้องหยุดทันทีเมื่อพบเงื่อนไขต่อไปนี้:
 
-- ไม่พบไฟล์ `.docx` ที่รองรับในโฟลเดอร์ source
+- ไม่พบไฟล์ `.docx` หรือ `.txt` ที่รองรับในโฟลเดอร์ source
 - ชื่อไฟล์ไม่มีระดับชั้น ป.1-ป.6
 - ไม่พบคำศัพท์ในตาราง
 - cell คำว่างหรือมี control character
@@ -62,7 +63,15 @@ Audit command ต้องคืน exit code ไม่ผ่านเมื่�
 
 ทั้ง UI และ command line ใช้ audit gate เดียวกันผ่าน `app/core/import_audit.py` ดังนั้น Reload จะถูกบล็อกก่อนเขียน database หากยังมีไฟล์สถานะ `FAIL` หรือ `REVIEW`
 
-โครงอ่าน source ใช้ adapter registry ใน `app/core/source_adapters.py` โดย production registry เปิดเฉพาะ DOCX และแยก diagnostic registry สำหรับ PDF/OCR เพื่อไม่กระทบ UI, database หรือ audit gate
+โครงอ่าน source ใช้ adapter registry ใน `app/core/source_adapters.py` โดย production registry เปิดเฉพาะ DOCX/TXT และแยก diagnostic registry สำหรับ PDF/OCR เพื่อไม่กระทบ UI, database หรือ audit gate
+
+ทุกครั้งที่ audit อ่าน source จะสร้าง journal ในโฟลเดอร์ source:
+
+```text
+mtchoosewords_import_journal.json
+```
+
+Journal ต้องมี source formats ที่ production รองรับ, diagnostic-only formats, inputs, source ที่อ่านจริง, summary, can_import, error และรายละเอียดรายไฟล์
 
 ทุกครั้งที่ reload ผ่าน UI หรือ command line ระบบสร้างรายงาน:
 
@@ -92,7 +101,8 @@ app/doc/evidence/word_import_report.json
 
 สำหรับงานการศึกษา ห้าม import แบบเดาสุ่มหรือปล่อยผ่านข้อมูลที่ไม่ผ่าน contract
 
-- `.docx`: ใช้เป็น production path เดียว เพราะอ่านจาก XML table โดยตรง
+- `.docx`: ใช้เป็น production path เพราะอ่านจาก XML table โดยตรง
+- `.txt`: ใช้เป็น production path สำหรับชุดคำที่ visual verified แล้ว เพราะหนึ่งบรรทัดเท่ากับหนึ่งคำและตรวจนับง่าย
 - `.pdf`: diagnostic-only จนกว่าจะมี expected output ที่คนตรวจรับแล้วและ approval workflow ที่ตรวจย้อนหลังได้
 - AI หรือ OCR ไม่สามารถ overwrite คำศัพท์ production โดยไม่มี human review
 - คำที่ยาวจน Word แสดงหลายบรรทัดใน cell เดียวสามารถอ่านได้ แต่ audit จะ mark เป็น `long_cell_review` เพื่อให้ AI/คนตรวจซ้ำ

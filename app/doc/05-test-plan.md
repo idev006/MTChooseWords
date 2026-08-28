@@ -4,7 +4,7 @@
 
 | Test | กรณีทดสอบ | ผลที่คาดหวัง |
 |---|---|---|
-| T-01 | Production import DOCX | ได้คำจาก `.docx` และบันทึก SQLite สำเร็จ |
+| T-01 | Production import DOCX/TXT | ได้คำจาก `.docx`/`.txt` และบันทึก SQLite สำเร็จ |
 | T-01A | ตรวจ table cells | PDF ปัจจุบันได้ 41 ตารางหน้าและ 1,210 เซลล์คำ |
 | T-01B | Reload ซ้ำ | คลังคำเดิมถูกล้างก่อน import และจำนวนไม่เพิ่มซ้ำ |
 | T-01C | สกัด DOCX เฉพาะตาราง | ข้อความนอกตารางไม่ถูก import และ cell คำในตารางถูกอ่านพร้อมระดับชั้น |
@@ -19,6 +19,8 @@
 | T-01L | Pluggable source adapters | Table source extractor ต้องรับ adapter registry ที่ inject ได้เพื่อให้ทดสอบ/เพิ่ม parser ใหม่ได้ง่าย |
 | T-01M | PDF OCR coverage | หน้า PDF ที่มี expected count ต้องรายงาน coverage และส่งคำที่สงสัยเข้า REVIEW พร้อม evidence |
 | T-01N | PDF production disabled | default importer และ UI/CLI reload ต้องไม่รับ PDF เข้า database |
+| T-01O | TXT source import | อ่าน `.txt` แบบหนึ่งคำต่อบรรทัด ระดับชั้นจากชื่อไฟล์ และใช้เลขบรรทัดเป็น source index |
+| T-01P | Import journal | audit/reload ต้องสร้าง `mtchoosewords_import_journal.json` ในโฟลเดอร์ source ทุกครั้ง |
 | T-02 | PDF ไม่มี text layer | แจ้งปัญหา ไม่สร้างผลลัพธ์ผิดพลาดเงียบ ๆ |
 | T-03 | ขอคำมากกว่าคลัง | แจ้งเตือนและไม่สร้าง PDF |
 | T-04 | หลายหน้า | คำไม่ซ้ำกันข้ามทุกหน้า |
@@ -73,4 +75,4 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 35 tests, audit DOCX lot1 ผ่าน 6 ไฟล์โดยไม่มี REVIEW/FAIL, Reload DOCX จริงสำเร็จพร้อม import evidence, OCR diagnostic หน้า PDF ป.6 ตัวอย่างอ่านได้ 100% ของ expected 15 คำ และ folder OCR probe สร้างคิว REVIEW พร้อมหลักฐานโดยไม่ import คำสงสัย
+Baseline ล่าสุด: pytest ผ่าน 42 tests, audit TXT visual-verified ผ่าน 6 ไฟล์โดยไม่มี REVIEW/FAIL, Reload TXT จริงสำเร็จ 8,192 unique words พร้อม import evidence และ source-folder journal, PDF ถูกปิดจาก production import แต่ยังใช้ diagnostic ได้

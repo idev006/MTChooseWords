@@ -241,24 +241,24 @@ class MainWindow(QMainWindow):
 
         import_tab = QWidget()
         import_layout = QVBoxLayout(import_tab)
-        import_box = QGroupBox("นำเข้าข้อมูลคำศัพท์")
+        import_box = QGroupBox("ขั้นตอนที่ 1: นำเข้าคลังคำ (DOCX/TXT)")
         import_form = QGridLayout(import_box)
         import_fields = [("ไฟล์คำศัพท์", source_row), ("โหมด Reload", self.clear_before_reload)]
         for i, (label, widget) in enumerate(import_fields):
             import_form.addWidget(QLabel(label), i, 0)
             import_form.addWidget(widget, i, 1)
-        self.refresh = QPushButton("Reload คำจาก DOCX")
+        self.refresh = QPushButton("Reload คำจาก DOCX/TXT")
         import_buttons = QHBoxLayout()
         import_buttons.addStretch()
         import_buttons.addWidget(self.refresh)
         import_layout.addWidget(import_box)
         import_layout.addLayout(import_buttons)
         import_layout.addStretch()
-        tabs.addTab(import_tab, "นำเข้าข้อมูล")
+        tabs.addTab(import_tab, "1 นำเข้าข้อมูล")
 
         worksheet_tab = QWidget()
         worksheet_layout = QVBoxLayout(worksheet_tab)
-        worksheet_box = QGroupBox("สร้างไฟล์ใบงาน")
+        worksheet_box = QGroupBox("ขั้นตอนที่ 2: สร้างไฟล์ใบงาน")
         worksheet_form = QGridLayout(worksheet_box)
         worksheet_fields = [("จำนวนชุดเอกสาร", self.document_sets), ("จำนวนหน้า/ชุด", self.pages), ("จำนวนคำต่อหน้า", self.words), ("ระดับชั้น", self.grade_selector), ("ฟอนท์", self.fonts), ("การวางกระดาษ", self.orientation), ("ช่วงขนาดฟอนท์ (pt)", self.font_range), ("ช่วงองศาหมุน", self.rotation_range), ("ข้อความ Title", self.title), ("ขนาด Title (pt)", self.title_size), ("สีตัวอักษร Title", self.title_color), ("สีพื้น Title", self.title_bgcolor), ("ระยะห่างบน (px)", self.title_margin), ("ระยะห่างล่าง (px)", self.title_margin_bottom), ("Padding Title (px)", self.title_padding), ("Seed (0 = สุ่มใหม่)", self.seed)]
         for i, (label, widget) in enumerate(worksheet_fields):
@@ -274,7 +274,7 @@ class MainWindow(QMainWindow):
         worksheet_layout.addWidget(worksheet_box)
         worksheet_layout.addLayout(worksheet_buttons)
         worksheet_layout.addStretch()
-        tabs.addTab(worksheet_tab, "สร้างใบงาน")
+        tabs.addTab(worksheet_tab, "2 สร้างใบงาน")
 
         self.info = QLabel()
         layout.addWidget(self.info)
@@ -318,7 +318,7 @@ class MainWindow(QMainWindow):
 
     def _choose_sources(self):
         start = str(self.cfg.resolve(self.cfg.words_dir))
-        paths, _ = QFileDialog.getOpenFileNames(self, "เลือกไฟล์คำศัพท์", start, "Word DOCX (*.docx)")
+        paths, _ = QFileDialog.getOpenFileNames(self, "เลือกไฟล์คำศัพท์", start, "Word/Text (*.docx *.txt)")
         if paths:
             self.cfg.word_source_files = paths
             self.source_files.setText(self._source_summary())

@@ -2,7 +2,7 @@
 
 ## 1. Content safety and accuracy
 
-- Source file picker: ให้ผู้ใช้เลือก `.docx`/`.pdf` เฉพาะไฟล์ที่ต้องการ reload
+- Source file picker: ให้ผู้ใช้เลือก `.docx`/`.txt` เฉพาะไฟล์ที่ต้องการ reload และแสดง path ของ journal หลังอ่านเสร็จ
 - Import mode: เลือกได้ระหว่าง clear-all และ append
 - Import preview: แสดงจำนวนคำแยกตามระดับชั้นก่อนบันทึกลงฐานข้อมูล
 - Issue report: แสดงคำ/หน้า/ไฟล์ที่ไม่ผ่าน contract เพื่อส่งกลับไปแก้ source
