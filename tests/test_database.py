@@ -3,6 +3,7 @@ from app.core.contracts import WordEntry
 from app.db.models import Word
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+import sqlite3
 
 
 def test_replace_words_is_unique_and_reloads(tmp_path):
@@ -54,3 +55,29 @@ def test_database_uses_canonical_grade_word_key_and_trims_words(tmp_path):
 
     assert rows == [("ป.1", "กา", "กา"), ("ป.2", "กา", "กา")]
     assert repo.count_by_grade()["ป.1"] == 1
+
+
+def test_database_migrates_old_integer_grade_schema_to_canonical_text_key(tmp_path):
+    database = tmp_path / "words.sqlite3"
+    connection = sqlite3.connect(database)
+    connection.execute(
+        "create table words (grade integer not null, normalized varchar(512) not null, "
+        "text text not null, source_file varchar(512) not null, source_index integer, "
+        "primary key (grade, normalized))"
+    )
+    connection.execute(
+        "insert into words (grade, normalized, text, source_file, source_index) values (1, 'เก่า', 'เก่า', 'old', 1)"
+    )
+    connection.commit()
+    connection.close()
+
+    repo = WordRepository(database)
+    added = repo.add_words([WordEntry(" ใหม่ ", "p1.txt", 1, 1)])
+
+    with sqlite3.connect(database) as check:
+        columns = check.execute("pragma table_info(words)").fetchall()
+        rows = check.execute("select grade, normalized, text from words").fetchall()
+
+    assert added == 1
+    assert columns[0][1:3] == ("grade", "VARCHAR(8)")
+    assert rows == [("ป.1", "ใหม่", "ใหม่")]

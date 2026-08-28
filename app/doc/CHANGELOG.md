@@ -8,6 +8,8 @@
 - ปรับ import/audit report และ source-folder journal ให้แสดงระดับชั้นเป็น `ป.x`
 - ทดสอบ source จริงรวม `app/assets/words/lot1` และ `app/assets/words/text` ผ่าน 12 ไฟล์ ได้ 14,374 cells, 8,705 unique words และ 5,669 duplicate cells
 - เพิ่ม automated tests สำหรับ canonical grade key, trim และ duplicate ข้าม DOCX/TXT
+- เพิ่ม certification tests สำหรับ source จริง, committed SQLite database, config production-safe และ schema migration จาก grade แบบ integer
+- ปรับ `config.toml` ให้ใช้ DOCX/TXT production source และนำฐานข้อมูล SQLite baseline ขึ้น git
 
 ## 2026-08-28 — TXT source import and source journals
 

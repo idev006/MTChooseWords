@@ -3,18 +3,18 @@ words_dir = "app/assets/words/lot1"
 fonts_dir = "app/assets/fonts"
 output_dir = "app/output"
 database = "app/mtchoosewords.sqlite3"
-word_source_files = []
+word_source_files = ["app/assets/words/lot1", "app/assets/words/text"]
 
 [pdf]
-orientation = "landscape"
-pages = 3
-words_per_page = 15
-document_sets = 10
+orientation = "portrait"
+pages = 1
+words_per_page = 30
+document_sets = 1
 font_min_pt = 18
 font_max_pt = 70
 rotation_min = -30
 rotation_max = 30
-title = "นักล่าคำตัวจริง ตามหาฉันให้เจอ (คำพื้นฐาน ชั้น ป.3)"
+title = "นักล่าคำตัวจริง ตามหาฉันให้เจอ"
 title_font_size = 30
 title_color = "#263238"
 title_margin_top_px = 10

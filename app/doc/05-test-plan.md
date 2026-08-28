@@ -78,4 +78,4 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 44 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, PDF ถูกปิดจาก production import แต่ยังใช้ diagnostic ได้
+Baseline ล่าสุด: pytest ผ่าน 48 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, committed SQLite database มี 8,705 คำและไม่มี trim violation, PDF ถูกปิดจาก production import แต่ยังใช้ diagnostic ได้
