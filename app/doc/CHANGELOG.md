@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-28 — Disable PDF production import
+
+- ปิด PDF จาก production import ชั่วคราวเพื่อป้องกันคำที่ยังไม่ผ่านการตรวจรับเข้าสู่ฐานข้อมูล
+- ปรับ default source registry ให้รับเฉพาะ `.docx` สำหรับ UI, audit และ reload
+- คงเครื่องมือ PDF diagnosis/OCR review queue ไว้สำหรับ QA และสร้างหลักฐาน โดยไม่ import เข้า database
+- ปรับ UI file picker และข้อความ Reload ให้เป็น DOCX-only
+- เพิ่ม automated tests ยืนยันว่า default importer ไม่รับ PDF แต่ diagnostic registry ยังใช้ PDF adapter ได้
+
 ## 2026-08-26 — DOCX word-bank and grade selection
 
 - เพิ่ม DOCX table importer สำหรับอ่านเฉพาะคำศัพท์ในตารางจาก `app/assets/words/lot1`

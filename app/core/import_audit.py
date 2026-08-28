@@ -62,7 +62,7 @@ def audit_word_sources(
     source_registry = registry or default_source_registry()
     sources = source_registry.sources_from(source)
     if not sources:
-        raise ValueError("ไม่พบไฟล์ .docx หรือ .pdf ใน source ที่เลือก")
+        raise ValueError("ไม่พบไฟล์ .docx ใน source ที่เลือก; PDF ถูกปิดสำหรับ production import ชั่วคราว")
 
     reviewed = load_reviewed_suspicions(review_registry_path) if review_registry_path else set()
     files: list[SourceAuditFile] = []

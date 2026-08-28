@@ -2,12 +2,13 @@
 
 ## 1. Supported source formats
 
-โปรแกรมรองรับ source แบบตาราง 2 รูปแบบ:
+โปรแกรมรองรับ source แบบตารางสำหรับ production 1 รูปแบบ:
 
 | รูปแบบ | สถานะ | เงื่อนไข source |
 |---|---|---|
 | `.docx` | Production path | ไฟล์ Word ต้องมีคำศัพท์อยู่ในตารางแบบคู่คอลัมน์ `ลำดับ/คำ` หรือ `คำที่/คำ` และชื่อไฟล์ต้องมีระดับชั้น ป.1-ป.6 |
-| `.pdf` | Legacy supported path | PDF ต้องมี text layer, vector table lines, cell geometry อ่านได้ และชื่อไฟล์ต้องมีระดับชั้น ป.1-ป.6 |
+
+PDF ถูกปิดจาก production import ชั่วคราว และใช้ได้เฉพาะ diagnostic/review command เพราะยังไม่มี approval workflow ที่รับประกันความถูกต้องได้พอสำหรับงานการศึกษา
 
 ไฟล์ `.doc` ยังไม่ถูกอ่านโดยตรง หากต้องการใช้ต้องแปลงเป็น `.docx` ก่อน
 
@@ -27,13 +28,13 @@ Importer อ่านเฉพาะ cell ในตารางที่จั�
 
 การ import ต้องหยุดทันทีเมื่อพบเงื่อนไขต่อไปนี้:
 
-- ไม่พบไฟล์ `.docx` หรือ `.pdf` ที่รองรับในโฟลเดอร์ source
+- ไม่พบไฟล์ `.docx` ที่รองรับในโฟลเดอร์ source
 - ชื่อไฟล์ไม่มีระดับชั้น ป.1-ป.6
 - ไม่พบคำศัพท์ในตาราง
 - cell คำว่างหรือมี control character
 - คำยาวผิดปกติเกิน 120 ตัวอักษร
 - ระดับชั้นนอกช่วง ป.1-ป.6
-- PDF ไม่มี table geometry หรือไม่มี text layer ที่อ่านได้ตาม contract
+- เลือกเฉพาะ PDF หรือโฟลเดอร์ที่มีแต่ PDF สำหรับ production import
 
 คำที่ยาวเกิน 40 ตัวอักษรยังอ่านได้ แต่ระบบจะจัดเป็น REVIEW เพื่อให้ AI/ทีมวิชาการตรวจรับก่อนใช้จริง เพราะอาจเป็นคำหรือวลีที่ Word แสดงหลายบรรทัดใน cell เดียว
 
@@ -61,7 +62,7 @@ Audit command ต้องคืน exit code ไม่ผ่านเมื่�
 
 ทั้ง UI และ command line ใช้ audit gate เดียวกันผ่าน `app/core/import_audit.py` ดังนั้น Reload จะถูกบล็อกก่อนเขียน database หากยังมีไฟล์สถานะ `FAIL` หรือ `REVIEW`
 
-โครงอ่าน source ใช้ adapter registry ใน `app/core/source_adapters.py` เพื่อให้เพิ่มตัวอ่านใหม่ เช่น OCR-backed PDF adapter ได้โดยไม่กระทบ UI, database หรือ audit gate
+โครงอ่าน source ใช้ adapter registry ใน `app/core/source_adapters.py` โดย production registry เปิดเฉพาะ DOCX และแยก diagnostic registry สำหรับ PDF/OCR เพื่อไม่กระทบ UI, database หรือ audit gate
 
 ทุกครั้งที่ reload ผ่าน UI หรือ command line ระบบสร้างรายงาน:
 
@@ -91,8 +92,8 @@ app/doc/evidence/word_import_report.json
 
 สำหรับงานการศึกษา ห้าม import แบบเดาสุ่มหรือปล่อยผ่านข้อมูลที่ไม่ผ่าน contract
 
-- `.docx`: ใช้เป็น production path หลัก เพราะอ่านจาก XML table โดยตรง
-- `.pdf`: รองรับเพื่อ compatibility แต่ถ้า PDF มี character map ผิดหรือ source ไม่ตรง contract ต้องแก้ source หรือทำ visual review ก่อนนำไปใช้จริง
+- `.docx`: ใช้เป็น production path เดียว เพราะอ่านจาก XML table โดยตรง
+- `.pdf`: diagnostic-only จนกว่าจะมี expected output ที่คนตรวจรับแล้วและ approval workflow ที่ตรวจย้อนหลังได้
 - AI หรือ OCR ไม่สามารถ overwrite คำศัพท์ production โดยไม่มี human review
 - คำที่ยาวจน Word แสดงหลายบรรทัดใน cell เดียวสามารถอ่านได้ แต่ audit จะ mark เป็น `long_cell_review` เพื่อให้ AI/คนตรวจซ้ำ
 - OCR-backed PDF extraction ต้องเทียบกับ expected list ที่ตรวจรับแล้วก่อน import production เพราะ OCR อาจอ่านเลขลำดับหรือคำบาง cell ผิดได้แม้ confidence สูง
@@ -132,7 +133,7 @@ PDF source folder `app/assets/words/pdf` has been probed and documented in:
 app/doc/evidence/pdf_source_probe.md
 ```
 
-The adapter supports PDF sources that pass the contract, but this specific PDF batch is not yet certified for 100% production import because some files expose corrupted text-layer output and require visual review or source correction.
+Production import does not load PDF sources. This specific PDF batch is not certified for 100% production import because some files expose corrupted text-layer output, OCR uncertainty, and timeout-review pages.
 
 ใช้คำสั่งนี้เมื่อต้องการวิเคราะห์ PDF แบบรายหน้าโดยไม่ import:
 

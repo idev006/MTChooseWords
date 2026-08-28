@@ -247,7 +247,7 @@ class MainWindow(QMainWindow):
         for i, (label, widget) in enumerate(import_fields):
             import_form.addWidget(QLabel(label), i, 0)
             import_form.addWidget(widget, i, 1)
-        self.refresh = QPushButton("Reload คำจาก DOCX/PDF")
+        self.refresh = QPushButton("Reload คำจาก DOCX")
         import_buttons = QHBoxLayout()
         import_buttons.addStretch()
         import_buttons.addWidget(self.refresh)
@@ -318,7 +318,7 @@ class MainWindow(QMainWindow):
 
     def _choose_sources(self):
         start = str(self.cfg.resolve(self.cfg.words_dir))
-        paths, _ = QFileDialog.getOpenFileNames(self, "เลือกไฟล์คำศัพท์", start, "Word/PDF (*.docx *.pdf)")
+        paths, _ = QFileDialog.getOpenFileNames(self, "เลือกไฟล์คำศัพท์", start, "Word DOCX (*.docx)")
         if paths:
             self.cfg.word_source_files = paths
             self.source_files.setText(self._source_summary())

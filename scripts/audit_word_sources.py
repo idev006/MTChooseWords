@@ -1,4 +1,4 @@
-"""Audit DOCX/PDF word sources and write review evidence without importing."""
+"""Audit production DOCX word sources and write review evidence without importing."""
 import argparse
 import json
 from pathlib import Path
@@ -11,8 +11,8 @@ from app.core.import_audit import audit_word_sources, write_audit_report
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Audit DOCX/PDF table word sources before import.")
-    parser.add_argument("sources", nargs="*", type=Path, help="Optional .docx/.pdf files or source directories.")
+    parser = argparse.ArgumentParser(description="Audit DOCX table word sources before import. PDF import is disabled for production.")
+    parser.add_argument("sources", nargs="*", type=Path, help="Optional .docx files or source directories.")
     parser.add_argument("--output", type=Path, default=None, help="Audit report JSON path.")
     return parser.parse_args()
 
@@ -23,7 +23,11 @@ def main() -> int:
     config = AppConfig.load(root / "config.toml")
     selected = args.sources or [config.resolve(value) for value in config.word_source_files] or [config.resolve(config.words_dir)]
     output = args.output or root / "app/doc/evidence/word_source_audit_report.json"
-    result = audit_word_sources(selected, root / "app/assets/words/reviewed_suspicions.json")
+    try:
+        result = audit_word_sources(selected, root / "app/assets/words/reviewed_suspicions.json")
+    except ValueError as exc:
+        print(f"Audit blocked: {exc}")
+        return 1
     write_audit_report(output, result)
     print(f"Audit report: {output}")
     print(json.dumps({

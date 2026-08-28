@@ -68,8 +68,18 @@ class SourceAdapterRegistry:
         return adapter.extract(path, progress=progress)
 
 
-def default_source_registry() -> SourceAdapterRegistry:
+def production_source_registry() -> SourceAdapterRegistry:
+    return SourceAdapterRegistry([
+        DocxSourceAdapter({".docx"}),
+    ])
+
+
+def diagnostic_source_registry() -> SourceAdapterRegistry:
     return SourceAdapterRegistry([
         DocxSourceAdapter({".docx"}),
         PdfSourceAdapter({".pdf"}),
     ])
+
+
+def default_source_registry() -> SourceAdapterRegistry:
+    return production_source_registry()

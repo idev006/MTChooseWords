@@ -29,10 +29,10 @@
 - ผลกระทบ: บางกรณีพื้นที่ว่างอาจถูกใช้ได้ไม่เต็มประสิทธิภาพ
 - Next review: พิจารณา polygon/SAT เมื่อรองรับ 100+ คำต่อหน้า
 
-## ADR-005: ใช้ DOCX เป็น production word-bank source หลัก และคง PDF เป็น legacy adapter
+## ADR-005: ใช้ DOCX เป็น production word-bank source และปิด PDF import ชั่วคราว
 
 - Status: Accepted
-- Decision: Reload ใช้ adapter รวมที่รองรับ `.docx` และ `.pdf` แบบ table-based โดย `.docx` เป็นเส้นทางหลักสำหรับ source ชุด ป.1-ป.6
-- เหตุผล: `.docx` อ่าน table XML ได้โดยตรง จึงลดความเสี่ยงจาก PDF text-layer mapping ผิด ส่วน PDF ยังจำเป็นสำหรับ backward compatibility
-- ผลกระทบ: source ทุกไฟล์ต้องมีระดับชั้นในชื่อไฟล์ และ pipeline ต้องหยุดเมื่อไม่ผ่าน source contract
+- Decision: Reload production ใช้ adapter ที่รองรับเฉพาะ `.docx`; PDF ถูกย้ายไปเป็น diagnostic-only
+- เหตุผล: `.docx` อ่าน table XML ได้โดยตรงและตรวจรับได้ดีกว่า ส่วน PDF/OCR ยังมีความเสี่ยงจาก text-layer mapping, timeout และ cell evidence ที่ต้องใช้คนตรวจ
+- ผลกระทบ: UI และ CLI จะไม่เลือกหรือนำเข้า PDF เข้าฐานข้อมูล แต่ยังคงเครื่องมือวิเคราะห์ PDF สำหรับสร้างหลักฐานและวางแผน approval workflow ในอนาคต
 - Evidence: `app/doc/evidence/word_import_report.json`

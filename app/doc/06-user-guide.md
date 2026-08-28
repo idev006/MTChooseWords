@@ -43,12 +43,12 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --no
 - `นำเข้าข้อมูล`: เลือกไฟล์คำศัพท์และ Reload คำเข้า database
 - `สร้างใบงาน`: เลือกระดับชั้น ตั้งค่าหน้าเอกสาร และสร้าง PDF
 
-1. ใส่ไฟล์คำศัพท์ `.docx` หรือ `.pdf` ที่เป็นตารางใน `app/assets/words/lot1`
+1. ใส่ไฟล์คำศัพท์ `.docx` ที่เป็นตารางใน `app/assets/words/lot1`
 2. ใส่ฟอนท์ที่รองรับภาษาไทยใน `app/assets/fonts`
 3. ตั้งชื่อไฟล์ให้มีระดับชั้น เช่น `ป.1`, `ป.2` หรือ `P3`
 4. ที่ tab `นำเข้าข้อมูล` เลือกไฟล์คำศัพท์เฉพาะชุด หรือปล่อยค่าเริ่มต้นเพื่อใช้ทั้งโฟลเดอร์
 5. เลือกว่าจะ “ล้างคลังคำก่อน Reload” หรือ append เข้าไปโดยไม่ล้างของเดิม
-6. กด “Reload คำจาก DOCX/PDF” ระบบจะตรวจ source ก่อน หากผ่านจะแสดง preview ให้ยืนยัน
+6. กด “Reload คำจาก DOCX” ระบบจะตรวจ source ก่อน หากผ่านจะแสดง preview ให้ยืนยัน
 7. ยืนยัน preview เพื่อให้ระบบนำคำเข้า database หรือยกเลิกหากจำนวนไม่ตรงกับที่คาด
 8. ไปที่ tab `สร้างใบงาน`
 9. เลือก checkbox ระดับชั้น ป.1-ป.6 ที่ต้องการใช้
@@ -92,7 +92,7 @@ app/doc/evidence/word_import_report.json
 app/doc/evidence/word_source_audit_report.json
 ```
 
-หากต้องตรวจ PDF โดยไม่ Reload เข้า database ให้ใช้คำสั่ง diagnostic:
+PDF ถูกปิดจากการ Reload เข้า database ชั่วคราว เพราะยังไม่มีขั้นตอนตรวจรับที่ดีพอสำหรับงานการศึกษา หากต้องตรวจ PDF โดยไม่ Reload เข้า database ให้ใช้คำสั่ง diagnostic:
 
 ```powershell
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_sources.py app\assets\words\pdf --start-page 1 --max-pages 12
@@ -114,8 +114,8 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\read_pdf_oc
 
 ## ข้อจำกัดปัจจุบัน
 
-- PDF ที่เป็นภาพสแกนยังไม่รองรับ OCR
+- PDF ทุกชนิดถูกปิดจาก production import ชั่วคราว และใช้ได้เฉพาะ diagnostic/review command
 - ไฟล์ `.doc` ไม่ถูกอ่านโดยตรง ต้องแปลงเป็น `.docx` ก่อน
-- PDF ต้องมี text layer และตาราง vector ตาม contract; หาก text layer ของ PDF ผิด ต้องแก้ source หรือทำ visual review ก่อนใช้จริง
+- ก่อนเปิด PDF import อีกครั้ง ต้องมี expected output ที่คนตรวจรับแล้ว, review queue ที่ใช้ง่าย และ approval log ที่ตรวจย้อนหลังได้
 - หากจำนวนคำมากเกินพื้นที่แม้ลดถึง minimum แล้ว ระบบจะแจ้งเตือนแทนการสร้างไฟล์ที่คำซ้อนกัน
 - ฟอนท์ที่เลือกต้องรองรับ glyph ของภาษาไทย

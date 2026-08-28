@@ -4,7 +4,7 @@
 
 | Test | กรณีทดสอบ | ผลที่คาดหวัง |
 |---|---|---|
-| T-01 | สกัด PDF text-based | ได้คำและบันทึก SQLite สำเร็จ |
+| T-01 | Production import DOCX | ได้คำจาก `.docx` และบันทึก SQLite สำเร็จ |
 | T-01A | ตรวจ table cells | PDF ปัจจุบันได้ 41 ตารางหน้าและ 1,210 เซลล์คำ |
 | T-01B | Reload ซ้ำ | คลังคำเดิมถูกล้างก่อน import และจำนวนไม่เพิ่มซ้ำ |
 | T-01C | สกัด DOCX เฉพาะตาราง | ข้อความนอกตารางไม่ถูก import และ cell คำในตารางถูกอ่านพร้อมระดับชั้น |
@@ -18,6 +18,7 @@
 | T-01K | Non-blocking import UI | การ audit/reload ต้องทำใน worker thread และรายงาน progress/status ให้ผู้ใช้เห็น |
 | T-01L | Pluggable source adapters | Table source extractor ต้องรับ adapter registry ที่ inject ได้เพื่อให้ทดสอบ/เพิ่ม parser ใหม่ได้ง่าย |
 | T-01M | PDF OCR coverage | หน้า PDF ที่มี expected count ต้องรายงาน coverage และส่งคำที่สงสัยเข้า REVIEW พร้อม evidence |
+| T-01N | PDF production disabled | default importer และ UI/CLI reload ต้องไม่รับ PDF เข้า database |
 | T-02 | PDF ไม่มี text layer | แจ้งปัญหา ไม่สร้างผลลัพธ์ผิดพลาดเงียบ ๆ |
 | T-03 | ขอคำมากกว่าคลัง | แจ้งเตือนและไม่สร้าง PDF |
 | T-04 | หลายหน้า | คำไม่ซ้ำกันข้ามทุกหน้า |

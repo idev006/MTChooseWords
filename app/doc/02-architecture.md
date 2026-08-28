@@ -9,7 +9,7 @@ PySide6 UI
     ↓
 Application Services
     ├── Table Word Source Extractor
-    ├── PDF Extractor
+    ├── PDF Diagnostic Extractor
     ├── DOCX Table Extractor
     ├── Source Contract Validator
     ├── Word Repository
@@ -20,7 +20,7 @@ Persistence
     └── TOML configuration
     ↓
 Assets
-    ├── Source DOCX/PDF word tables
+    ├── Source DOCX word tables
     └── User-selectable fonts
 ```
 
@@ -31,8 +31,8 @@ Assets
 | `app/ui/main_window.py` | UI แบบ 2 tab สำหรับนำเข้าข้อมูลและสร้างใบงาน, validation, progress และ worker thread |
 | `app/core/extractor.py` | ตรวจเส้นตาราง, อ่านเฉพาะ word cells, แก้ลำดับ Unicode ภาษาไทย และตรวจครบทุกหน้า |
 | `app/core/docx_extractor.py` | อ่านเฉพาะ cell ในตารางของไฟล์ Word `.docx` และผูกคำกับระดับชั้นจากชื่อไฟล์ |
-| `app/core/source_adapters.py` | registry ของ source adapters เพื่อเสียบตัวอ่าน DOCX/PDF/OCR ในอนาคตโดยไม่ผูก UI กับ parser โดยตรง |
-| `app/core/word_source_extractor.py` | เลือก adapter ตามนามสกุลไฟล์และรวม source `.docx`/`.pdf` |
+| `app/core/source_adapters.py` | registry ของ source adapters โดย production registry เปิดเฉพาะ DOCX และแยก diagnostic registry สำหรับ PDF |
+| `app/core/word_source_extractor.py` | เลือก adapter production ตามนามสกุลไฟล์และรวม source `.docx` |
 | `app/core/source_contract.py` | ตรวจ source contract, ระดับชั้น, cell คำ และสร้าง import report |
 | `app/core/import_audit.py` | รวม audit gate สำหรับ UI/command line, สร้าง preview decision และบล็อก REVIEW/FAIL ก่อนเขียนฐานข้อมูล |
 | `app/core/pdf_generator.py` | สร้างหน้า A4, วัดขนาดคำ, หมุน และจัดวาง |
@@ -73,7 +73,7 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 ### DOCX word-bank contract
 
 - แหล่งข้อมูลหลักใหม่อยู่ที่ `app/assets/words/lot1`
-- อ่านเฉพาะไฟล์ `.docx` และ `.pdf`; ไฟล์ `.doc` ในโฟลเดอร์เดียวกันถูกข้าม
+- อ่านเฉพาะไฟล์ `.docx`; ไฟล์ `.doc` และ `.pdf` ในโฟลเดอร์เดียวกันถูกข้ามใน production import
 - อ่านเฉพาะข้อความใน table cell ที่จับคู่เลขลำดับกับคำศัพท์ได้
 - ไม่อ่านข้อความหัวเรื่อง ย่อหน้า หรือคำบรรยายนอกตาราง
 - ระดับชั้นอ่านจากชื่อไฟล์ เช่น `ป.1` ถึง `ป.6`
@@ -82,16 +82,18 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 - Reload ที่ผ่าน audit จะสร้าง evidence report ที่ `app/doc/evidence/word_import_report.json`
 - UI รองรับการเลือกไฟล์ source เฉพาะชุด เลือกระหว่าง clear-all หรือ append และแสดง preview ก่อนยืนยันนำเข้า
 
-### PDF legacy contract
+### PDF diagnostic-only contract
 
-- แหล่งข้อมูลต้องเป็น PDF ที่มี vector table และ text layer
+- PDF ถูกปิดจาก production import ชั่วคราว เพราะยังเชื่อถือไม่ได้พอสำหรับข้อมูลการศึกษา
+- เครื่องมือ PDF ใช้เพื่อวิเคราะห์, สร้าง review queue และเก็บหลักฐานเท่านั้น
+- แหล่งข้อมูล diagnostic ต้องเป็น PDF ที่มี vector table และ text layer
 - ชื่อไฟล์ PDF ต้องมีระดับชั้น ป.1-ป.6 หรือ P1-P6
 - ใช้ `pdfplumber.find_tables()` ตรวจหา table geometry จากเส้นจริงของ PDF
 - อ่าน `page.chars` เฉพาะกรอบ cell ที่เป็นคอลัมน์คำด้านซ้ายและด้านขวา
 - Parser อ่านจากคู่ cell `เลขลำดับ/คำ` เป็นหลัก และใช้ fallback สำหรับ PDF legacy ที่มี geometry เก่า
 - จัดอักขระตามตำแหน่ง glyph และส่งผ่าน Thai Unicode normalizer
 - ช่องว่างท้ายตารางยอมรับได้สำหรับหน้าสุดท้าย แต่ห้ามมี PDF table page ที่อ่านคำไม่ได้ทั้งหมด
-- `reload_words.py` เรียก `WordRepository.replace_words()` ซึ่งทำ `DELETE` แบบเทียบเท่า TRUNCATE ใน SQLite และ INSERT ภายใน transaction เดียวกัน
+- `reload_words.py` ไม่โหลด PDF เข้าฐานข้อมูล จนกว่าจะมี human-reviewed expected output และ approval workflow ที่ตรวจรับได้ครบถ้วน
 
 ## 7. Source code maintainability rule
 
@@ -113,7 +115,7 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 
 Pipeline ห้าม import ข้อมูลที่ไม่ผ่าน source contract หากตรวจพบ source ผิดรูปแบบ ต้องหยุดและแจ้งปัญหาแทนการเก็บคำที่อาจผิดลงฐานข้อมูล
 
-DOCX เป็น production path หลักสำหรับความถูกต้องของคำ เพราะอ่านจาก XML table โดยตรง ส่วน PDF เป็น legacy supported path ที่ใช้ได้เมื่อ text layer และ table geometry ถูกต้องตาม contract เท่านั้น
+DOCX เป็น production path เดียวสำหรับความถูกต้องของคำ เพราะอ่านจาก XML table โดยตรง ส่วน PDF ถูกจำกัดเป็น diagnostic-only เพื่อป้องกันคำผิดเข้าสู่ฐานข้อมูล
 
 UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน การเขียนฐานข้อมูลจะเกิดเฉพาะเมื่อผู้ใช้กด Reload และยืนยัน preview หลัง audit ผ่านแล้ว
 
@@ -121,4 +123,4 @@ UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต
 
 งานที่ใช้เวลานานต้องทำผ่าน worker thread ได้แก่ audit/reload คำศัพท์และ export PDF เพื่อให้หน้าจอยังตอบสนองระหว่างประมวลผล ผู้ใช้จะเห็น progress bar และข้อความสถานะของขั้นตอนปัจจุบัน
 
-PDF adapter รายงาน progress ได้ระดับหน้าไฟล์ และมี diagnostic command แยกสำหรับ QA เพื่อดูว่าแต่ละหน้ามี table geometry หรืออ่านข้อความ cell ได้ผิดปกติหรือไม่ โดยไม่ต้อง import เข้าฐานข้อมูล
+PDF diagnostic command รายงาน progress ได้ระดับหน้าไฟล์ และใช้สำหรับ QA เพื่อดูว่าแต่ละหน้ามี table geometry หรืออ่านข้อความ cell ได้ผิดปกติหรือไม่ โดยไม่ import เข้าฐานข้อมูล

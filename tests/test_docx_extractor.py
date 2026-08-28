@@ -161,3 +161,15 @@ def test_import_audit_reports_progress(tmp_path):
     assert events[0][0] == 0
     assert events[-1][0] == events[-1][1]
     assert "บัญชีคำพื้นฐาน ป.1.docx" in events[-1][2]
+
+
+def test_import_audit_rejects_pdf_only_sources(tmp_path):
+    pdf = tmp_path / "บัญชีคำพื้นฐาน ป.1.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+
+    try:
+        audit_word_sources(pdf)
+    except ValueError as exc:
+        assert "PDF ถูกปิด" in str(exc)
+    else:
+        raise AssertionError("PDF-only production import should fail closed")

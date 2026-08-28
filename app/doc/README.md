@@ -33,4 +33,4 @@
 
 ## สถานะเอกสาร
 
-เอกสารนี้ครอบคลุม baseline ของ MVP, DOCX/PDF table source pipeline, import audit/preview gate และ PDF OCR review queue ณ วันที่ 2026-08-27
+เอกสารนี้ครอบคลุม baseline ของ MVP, DOCX-only production import pipeline, import audit/preview gate และ PDF OCR diagnostic review queue ณ วันที่ 2026-08-28

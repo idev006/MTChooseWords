@@ -9,7 +9,7 @@ from app.core.source_adapters import SourceAdapterRegistry, default_source_regis
 
 
 class TableWordSourceExtractor:
-    """Read supported table-based word sources: DOCX and text-layer PDF."""
+    """Read production-approved table-based word sources."""
 
     def __init__(self, registry: SourceAdapterRegistry | None = None):
         self.registry = registry or default_source_registry()
@@ -24,7 +24,7 @@ class TableWordSourceExtractor:
         rows: list[WordEntry] = []
         sources = self.sources_from(source)
         if not sources:
-            raise ValueError("ไม่พบไฟล์ .docx หรือ .pdf ใน source ที่เลือก")
+            raise ValueError("ไม่พบไฟล์ .docx ใน source ที่เลือก; PDF ถูกปิดสำหรับ production import ชั่วคราว")
 
         for path in sources:
             rows.extend(self.registry.extract(path))
