@@ -63,8 +63,8 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 
 ## 5. ความถูกต้องของข้อมูล
 
-- `Word.grade + Word.normalized` เป็น unique key เพื่อให้คำเดียวกันอยู่คนละระดับชั้นได้
-- ฐานข้อมูลใช้ `Word.grade + Word.normalized` เป็น composite primary key
+- `Word.grade + Word.normalized` เป็น unique key เพื่อให้คำเดียวกันอยู่คนละระดับชั้นได้ โดย `Word.grade` เก็บเป็นข้อความ `ป.1` ถึง `ป.6`
+- ฐานข้อมูลใช้ `Word.grade + Word.normalized` เป็น composite primary key และ trim/collapse ช่องว่างของคำก่อนสร้าง `normalized`
 - การสุ่มคำทำใน memory หลัง query จากฐานข้อมูล
 - การ query รองรับตัวกรองระดับชั้น ป.1-ป.6 จาก checkbox ใน UI
 - `seed = 0` หมายถึงสุ่มใหม่ทุกครั้ง
@@ -82,7 +82,7 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 - ไม่อ่านข้อความหัวเรื่อง ย่อหน้า หรือคำบรรยายนอกตาราง
 - ระดับชั้นอ่านจากชื่อไฟล์ เช่น `ป.1` ถึง `ป.6`
 - ตัวอย่างชื่อไฟล์ text: `คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt` หมายถึง ป.1
-- คำซ้ำภายในระดับชั้นถูกเก็บเป็นคำไม่ซ้ำในฐานข้อมูลตาม normalized key
+- คำซ้ำภายในระดับชั้นและคำซ้ำข้าม source DOCX/TXT ถูกเก็บเป็นคำไม่ซ้ำในฐานข้อมูลตามคีย์ `ป.x + normalized`
 - `reload_words.py` และ UI ต้องผ่าน `import_audit.py` ก่อนเขียนฐานข้อมูล
 - Reload ที่ผ่าน audit จะสร้าง evidence report ที่ `app/doc/evidence/word_import_report.json`
 - ทุกครั้งที่ audit อ่าน source จะสร้าง `mtchoosewords_import_journal.json` ในโฟลเดอร์ที่อ่าน เพื่อบันทึก source, summary, PASS/REVIEW/FAIL และ error

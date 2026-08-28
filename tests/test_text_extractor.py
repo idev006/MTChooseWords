@@ -48,4 +48,21 @@ def test_audit_writes_source_folder_journal(tmp_path):
     text = journal.read_text(encoding="utf-8")
     assert '"production_source_formats": [' in text
     assert '"unique_words": 2' in text
+    assert '"grade": "ป.3"' in text
     assert audit.summary.total_cells == 3
+
+
+def test_combined_docx_txt_duplicates_share_same_grade_word_key(tmp_path):
+    docx = tmp_path / "บัญชีคำพื้นฐาน ป.1.docx"
+    text = tmp_path / "คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt"
+    from tests.test_docx_extractor import _write_docx
+
+    _write_docx(docx)
+    text.write_text("กา\nคำ\nใหม่\n", encoding="utf-8")
+
+    audit = audit_word_sources(tmp_path)
+
+    assert audit.import_report is not None
+    assert audit.import_report.total_cells == 5
+    assert audit.import_report.unique_words == 3
+    assert audit.import_report.duplicate_cells == 2

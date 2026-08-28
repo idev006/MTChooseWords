@@ -87,7 +87,7 @@ def test_import_report_counts_duplicate_cells():
     assert report.total_cells == 3
     assert report.unique_words == 2
     assert report.duplicate_cells == 1
-    assert report.counts_by_grade == {1: 2, 2: 1}
+    assert report.counts_by_grade == {"ป.1": 2, "ป.2": 1}
 
 
 def test_source_contract_rejects_corrupt_pdf_text_layer_characters():
@@ -112,7 +112,7 @@ def test_long_wrapped_words_are_allowed_but_marked_for_review():
 
 def test_review_registry_loads_approved_suspicions(tmp_path):
     registry = tmp_path / "reviewed.json"
-    registry.write_text('{"approved_suspicions":[{"grade":1,"text":" ชิ้น ","reason":"duplicate_in_same_grade"}]}', encoding="utf-8")
+    registry.write_text('{"approved_suspicions":[{"grade":"ป.1","text":" ชิ้น ","reason":"duplicate_in_same_grade"}]}', encoding="utf-8")
 
     assert load_reviewed_suspicions(registry) == {(1, "ชิ้น", "duplicate_in_same_grade")}
 

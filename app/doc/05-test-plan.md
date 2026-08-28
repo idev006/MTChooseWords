@@ -21,6 +21,8 @@
 | T-01N | PDF production disabled | default importer และ UI/CLI reload ต้องไม่รับ PDF เข้า database |
 | T-01O | TXT source import | อ่าน `.txt` แบบหนึ่งคำต่อบรรทัด ระดับชั้นจากชื่อไฟล์ และใช้เลขบรรทัดเป็น source index |
 | T-01P | Import journal | audit/reload ต้องสร้าง `mtchoosewords_import_journal.json` ในโฟลเดอร์ source ทุกครั้ง |
+| T-01Q | Canonical grade-word key | ฐานข้อมูลต้องเก็บระดับชั้นเป็น `ป.1`-`ป.6`, trim คำก่อนบันทึก และกันซ้ำด้วย `ป.x + normalized word` |
+| T-01R | Combined source duplicate audit | เมื่อ audit DOCX+TXT พร้อมกัน ต้องนับ duplicate ข้าม source ในระดับเดียวกันได้ถูกต้อง |
 | T-02 | PDF ไม่มี text layer | แจ้งปัญหา ไม่สร้างผลลัพธ์ผิดพลาดเงียบ ๆ |
 | T-03 | ขอคำมากกว่าคลัง | แจ้งเตือนและไม่สร้าง PDF |
 | T-04 | หลายหน้า | คำไม่ซ้ำกันข้ามทุกหน้า |
@@ -41,7 +43,8 @@
 - เมื่อเลือกหลายระดับชั้น `count(words)` ต้องนับเฉพาะชั้นที่เลือก
 - Source ทุกไฟล์ที่ใช้ต้องมี grade อยู่ในชื่อไฟล์
 - Import report ต้องระบุ source files ที่ถูกใช้จริง
-- ฐานข้อมูลต้องใช้ `grade + normalized` เป็น key และ append mode ต้องไม่สร้าง duplicate key
+- ฐานข้อมูลต้องใช้ `ป.x + normalized` เป็น key และ append mode ต้องไม่สร้าง duplicate key
+- คำต้องถูก trim หัวท้ายและ normalize ช่องว่างก่อนสร้าง key
 - คำยาวผิดปกติควรถูก audit เพื่อ review ก่อน production import
 - UI และ command line ต้องใช้ audit gate เดียวกันก่อนเขียนฐานข้อมูล
 - งาน audit/reload ใน UI ต้องไม่ทำบน main thread
@@ -75,4 +78,4 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 42 tests, audit TXT visual-verified ผ่าน 6 ไฟล์โดยไม่มี REVIEW/FAIL, Reload TXT จริงสำเร็จ 8,192 unique words พร้อม import evidence และ source-folder journal, PDF ถูกปิดจาก production import แต่ยังใช้ diagnostic ได้
+Baseline ล่าสุด: pytest ผ่าน 44 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, PDF ถูกปิดจาก production import แต่ยังใช้ diagnostic ได้

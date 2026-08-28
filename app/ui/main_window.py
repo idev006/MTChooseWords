@@ -327,7 +327,7 @@ class MainWindow(QMainWindow):
         try:
             if hasattr(self.repo, "count_by_grade"):
                 by_grade = self.repo.count_by_grade()
-                details = " | ".join(f"ป.{grade}: {by_grade.get(grade, 0)}" for grade in range(1, 7))
+                details = " | ".join(f"ป.{grade}: {by_grade.get(f'ป.{grade}', 0)}" for grade in range(1, 7))
                 self.info.setText(f"คลังคำปัจจุบัน ({details})")
             else:
                 self.info.setText(f"คลังคำปัจจุบัน: {self.repo.count()} คำ")
@@ -431,7 +431,7 @@ class MainWindow(QMainWindow):
         self.progress.setValue(100)
         if hasattr(self.repo, "count_by_grade"):
             by_grade = self.repo.count_by_grade()
-            details = " | ".join(f"ป.{grade}: {by_grade.get(grade, 0)}" for grade in range(1, 7))
+            details = " | ".join(f"ป.{grade}: {by_grade.get(f'ป.{grade}', 0)}" for grade in range(1, 7))
             self.info.setText(f"{action}คำสำเร็จ: {count} คำ ({details})")
         else:
             self.info.setText(f"{action}คำสำเร็จ: {count} คำ")

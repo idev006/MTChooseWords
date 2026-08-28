@@ -1,5 +1,8 @@
 from app.db.database import WordRepository
 from app.core.contracts import WordEntry
+from app.db.models import Word
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 def test_replace_words_is_unique_and_reloads(tmp_path):
@@ -35,3 +38,19 @@ def test_append_words_without_clearing(tmp_path):
 
     assert repo.count([1]) == 1
     assert repo.count([2]) == 1
+
+
+def test_database_uses_canonical_grade_word_key_and_trims_words(tmp_path):
+    repo = WordRepository(tmp_path / "words.sqlite3")
+
+    assert repo.replace_words([
+        WordEntry(" กา ", "p1.txt", 1, 1),
+        WordEntry("กา", "p1.docx", 1, 1),
+        WordEntry("กา", "p2.txt", 2, 1),
+    ]) == 2
+
+    with Session(repo.engine) as session:
+        rows = session.execute(select(Word.grade, Word.normalized, Word.text).order_by(Word.grade)).all()
+
+    assert rows == [("ป.1", "กา", "กา"), ("ป.2", "กา", "กา")]
+    assert repo.count_by_grade()["ป.1"] == 1

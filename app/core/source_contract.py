@@ -17,7 +17,7 @@ ALLOWED_WORD_RE = re.compile(r"^[ก-๛A-Za-z0-9 .()/*+\-–_'\"“”]+$")
 class WordImportReport:
     total_cells: int
     unique_words: int
-    counts_by_grade: dict[int, int]
+    counts_by_grade: dict[str, int]
     duplicate_cells: int
     source_files: list[str]
 
@@ -38,6 +38,12 @@ def grade_from_name(path: Path) -> int:
     return int(match.group(1).translate(THAI_DIGITS))
 
 
+def grade_key(grade: int) -> str:
+    if not 1 <= grade <= 6:
+        raise ValueError(f"ระดับชั้นไม่ถูกต้อง: {grade}")
+    return f"ป.{grade}"
+
+
 def source_index_from_text(value: str) -> int | None:
     cleaned = value.translate(THAI_DIGITS)
     cleaned = re.sub(r"[^\d]", "", cleaned)
@@ -54,7 +60,7 @@ def collect_word_suspicions(entries: list[WordEntry]) -> list[WordSuspicion]:
 
     for entry in entries:
         text = _clean_word(entry.text)
-        key = (entry.grade, text.casefold())
+        key = (grade_key(entry.grade), text.casefold())
         if key in seen:
             suspicions.append(WordSuspicion(entry.grade, text, entry.source_file, entry.source_index, "duplicate_in_same_grade"))
         seen.add(key)
@@ -71,8 +77,8 @@ def validate_word_entries(entries: list[WordEntry]) -> WordImportReport:
     if not entries:
         raise ValueError("ไม่พบคำศัพท์จาก source ที่กำหนด")
 
-    keys: set[tuple[int, str]] = set()
-    counts: Counter[int] = Counter()
+    keys: set[tuple[str, str]] = set()
+    counts: Counter[str] = Counter()
     sources: set[str] = set()
     duplicate_cells = 0
 
@@ -89,9 +95,10 @@ def validate_word_entries(entries: list[WordEntry]) -> WordImportReport:
         if len(text) > 120:
             raise ValueError(f"คำยาวผิดปกติจาก {entry.source_file}: {text}")
 
-        counts[entry.grade] += 1
+        grade = grade_key(entry.grade)
+        counts[grade] += 1
         sources.add(entry.source_file)
-        key = (entry.grade, text.casefold())
+        key = (grade, text.casefold())
         if key in keys:
             duplicate_cells += 1
         keys.add(key)
@@ -108,5 +115,4 @@ def validate_word_entries(entries: list[WordEntry]) -> WordImportReport:
 def write_import_report(path: Path, report: WordImportReport) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = asdict(report)
-    payload["counts_by_grade"] = {str(key): value for key, value in report.counts_by_grade.items()}
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

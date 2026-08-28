@@ -4,6 +4,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, delete, inspect, select
 from sqlalchemy.orm import Session
 from app.core.contracts import WordEntry
+from app.core.source_contract import grade_key
 from app.db.models import Base, Word
 
 
@@ -19,16 +20,21 @@ class WordRepository:
         if not inspector.has_table("words"):
             return
         columns = {column["name"] for column in inspector.get_columns("words")}
+        grade_column = next((column for column in inspector.get_columns("words") if column["name"] == "grade"), None)
+        grade_type = str(grade_column["type"]).upper() if grade_column else ""
         primary_key = tuple(inspector.get_pk_constraint("words").get("constrained_columns", []))
         expected_columns = {"text", "source_file", "normalized", "grade", "source_index"}
-        if not expected_columns.issubset(columns) or primary_key != ("grade", "normalized"):
+        if not expected_columns.issubset(columns) or primary_key != ("grade", "normalized") or "INT" in grade_type:
             Base.metadata.drop_all(self.engine)
 
-    def _coerce_entry(self, row: WordEntry | tuple[str, str]) -> tuple[str, str, int, int | None]:
+    def _coerce_entry(self, row: WordEntry | tuple[str, str]) -> tuple[str, str, str, int | None]:
         if isinstance(row, WordEntry):
-            return row.text, row.source_file, row.grade, row.source_index
+            return row.text, row.source_file, grade_key(row.grade), row.source_index
         text, source = row
-        return text, source, 1, None
+        return text, source, grade_key(1), None
+
+    def _grade_keys(self, grades: list[int] | None = None) -> list[str] | None:
+        return [grade_key(grade) for grade in grades] if grades else None
 
     def clear_all(self) -> None:
         with Session(self.engine) as session, session.begin():
@@ -37,10 +43,11 @@ class WordRepository:
     def add_words(self, rows: list[WordEntry] | list[tuple[str, str]]) -> int:
         added = 0
         with Session(self.engine) as session, session.begin():
-            seen: set[tuple[int, str]] = set()
+            seen: set[tuple[str, str]] = set()
             for row in rows:
                 text, source, grade, source_index = self._coerce_entry(row)
-                normalized = " ".join(text.split()).casefold()
+                text = " ".join(text.split())
+                normalized = text.casefold()
                 key = (grade, normalized)
                 if normalized and key not in seen and session.get(Word, key) is None:
                     session.add(Word(grade=grade, normalized=normalized, text=text, source_file=source, source_index=source_index))
@@ -55,23 +62,26 @@ class WordRepository:
     def count(self, grades: list[int] | None = None) -> int:
         with Session(self.engine) as session:
             statement = select(Word.normalized)
-            if grades:
-                statement = statement.where(Word.grade.in_(grades))
+            grade_keys = self._grade_keys(grades)
+            if grade_keys:
+                statement = statement.where(Word.grade.in_(grade_keys))
             return len(session.scalars(statement).all())
 
-    def count_by_grade(self) -> dict[int, int]:
+    def count_by_grade(self) -> dict[str, int]:
         with Session(self.engine) as session:
-            result: dict[int, int] = {}
+            result: dict[str, int] = {}
             for grade in range(1, 7):
-                statement = select(Word.normalized).where(Word.grade == grade)
-                result[grade] = len(session.scalars(statement).all())
+                key = grade_key(grade)
+                statement = select(Word.normalized).where(Word.grade == key)
+                result[key] = len(session.scalars(statement).all())
             return result
 
     def random_words(self, amount: int, rng, grades: list[int] | None = None) -> list[str]:
         with Session(self.engine) as session:
             statement = select(Word.text)
-            if grades:
-                statement = statement.where(Word.grade.in_(grades))
+            grade_keys = self._grade_keys(grades)
+            if grade_keys:
+                statement = statement.where(Word.grade.in_(grade_keys))
             values = list(dict.fromkeys(session.scalars(statement).all()))
         rng.shuffle(values)
         return values[:amount]

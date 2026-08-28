@@ -1,13 +1,156 @@
 {
-  "source_count": 6,
+  "source_count": 12,
   "summary": {
-    "pass": 6,
+    "pass": 12,
     "review": 0,
     "fail": 0,
-    "total_cells": 8192,
-    "unique_words": 8192
+    "total_cells": 14374,
+    "unique_words": 8705
   },
   "files": [
+    {
+      "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.1.docx",
+      "status": "PASS",
+      "error": null,
+      "total_cells": 708,
+      "unique_words": 707,
+      "suspicions": [
+        {
+          "grade": "ป.1",
+          "text": "ชิ้น",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.1.docx",
+          "source_index": 179,
+          "reason": "duplicate_in_same_grade"
+        }
+      ],
+      "unresolved_suspicions": []
+    },
+    {
+      "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.2.docx",
+      "status": "PASS",
+      "error": null,
+      "total_cells": 1098,
+      "unique_words": 1097,
+      "suspicions": [
+        {
+          "grade": "ป.2",
+          "text": "สด",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.2.docx",
+          "source_index": 315,
+          "reason": "duplicate_in_same_grade"
+        }
+      ],
+      "unresolved_suspicions": []
+    },
+    {
+      "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+      "status": "PASS",
+      "error": null,
+      "total_cells": 1206,
+      "unique_words": 1204,
+      "suspicions": [
+        {
+          "grade": "ป.3",
+          "text": "รู้อะไรไม่สู้รู้วิชา รู้รักษาตัวรอดเป็นยอดดี",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+          "source_index": 811,
+          "reason": "long_cell_review"
+        },
+        {
+          "grade": "ป.3",
+          "text": "หลง",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+          "source_index": 1055,
+          "reason": "duplicate_in_same_grade"
+        },
+        {
+          "grade": "ป.3",
+          "text": "โอ้เอ้วิหารราย",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+          "source_index": 1206,
+          "reason": "duplicate_in_same_grade"
+        }
+      ],
+      "unresolved_suspicions": []
+    },
+    {
+      "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.4.docx",
+      "status": "PASS",
+      "error": null,
+      "total_cells": 1270,
+      "unique_words": 1270,
+      "suspicions": [],
+      "unresolved_suspicions": []
+    },
+    {
+      "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+      "status": "PASS",
+      "error": null,
+      "total_cells": 1048,
+      "unique_words": 1046,
+      "suspicions": [
+        {
+          "grade": "ป.5",
+          "text": "โฉมตรู",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+          "source_index": 223,
+          "reason": "duplicate_in_same_grade"
+        },
+        {
+          "grade": "ป.5",
+          "text": "สมเด็จพระเทพรัตนราชสุดาฯ สยามบรมราชกุมารี",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+          "source_index": 816,
+          "reason": "long_cell_review"
+        },
+        {
+          "grade": "ป.5",
+          "text": "ประวัติศาสตร์",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+          "source_index": 1028,
+          "reason": "duplicate_in_same_grade"
+        }
+      ],
+      "unresolved_suspicions": []
+    },
+    {
+      "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+      "status": "PASS",
+      "error": null,
+      "total_cells": 852,
+      "unique_words": 849,
+      "suspicions": [
+        {
+          "grade": "ป.6",
+          "text": "คนที่ไม่มีจุดมุ่งหมายใดในชีวิต เปรียบเสมือนเรือไม่มีหางเสือ",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+          "source_index": 83,
+          "reason": "long_cell_review"
+        },
+        {
+          "grade": "ป.6",
+          "text": "นมัสการ",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+          "source_index": 263,
+          "reason": "duplicate_in_same_grade"
+        },
+        {
+          "grade": "ป.6",
+          "text": "นักขัตฤกษ์",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+          "source_index": 264,
+          "reason": "duplicate_in_same_grade"
+        },
+        {
+          "grade": "ป.6",
+          "text": "เศียร",
+          "source_file": "app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+          "source_index": 640,
+          "reason": "duplicate_in_same_grade"
+        }
+      ],
+      "unresolved_suspicions": []
+    },
     {
       "source_file": "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
       "status": "PASS",
@@ -52,7 +195,7 @@
       "unique_words": 1472,
       "suspicions": [
         {
-          "grade": 5,
+          "grade": "ป.5",
           "text": "สมเด็จพระเทพรัตนราชสุดาฯ สยามบรมราชกุมารี",
           "source_file": "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
           "source_index": 1472,
@@ -69,7 +212,7 @@
       "unique_words": 1151,
       "suspicions": [
         {
-          "grade": 6,
+          "grade": "ป.6",
           "text": "คนที่ไม่มีจุดมุ่งหมายใดในชีวิต เปรียบเสมือนเรือไม่มีหางเสือ",
           "source_file": "app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt",
           "source_index": 788,

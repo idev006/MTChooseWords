@@ -84,7 +84,7 @@ app/doc/evidence/word_import_report.json
 - จำนวน cell คำที่อ่านได้ทั้งหมด
 - จำนวนคำ unique หลัง normalize
 - จำนวน cell ที่เป็นคำซ้ำ
-- จำนวนแยกตามระดับชั้น
+- จำนวนแยกตามระดับชั้นด้วยคีย์ `ป.1` ถึง `ป.6`
 - รายชื่อ source file ที่ใช้จริง
 
 ## 4.1 AI-assisted review loop
@@ -110,14 +110,18 @@ app/doc/evidence/word_import_report.json
 
 ## 6. Database key and import modes
 
-ฐานข้อมูลใช้ `grade + normalized word` เป็น primary key
+ฐานข้อมูลใช้ `grade key + normalized word` เป็น primary key โดย `grade key` ต้องเป็นข้อความ `ป.1`, `ป.2`, `ป.3`, `ป.4`, `ป.5` หรือ `ป.6` เท่านั้น
+
+ก่อนสร้าง key และบันทึกคำ ระบบต้อง trim หัวท้ายและ collapse ช่องว่างภายในคำให้เหลือรูปมาตรฐานเดียวกัน เช่น ` กา ` และ `กา` ในระดับ `ป.1` ต้องถือเป็นคำเดียวกัน
 
 Reload มี 2 โหมด:
 
 - clear-all: ล้างคำทั้งหมดก่อน import ชุดใหม่
-- append: เพิ่มคำจาก source ที่เลือกเข้าไป โดยข้ามคำที่มี `grade + normalized word` ซ้ำอยู่แล้ว
+- append: เพิ่มคำจาก source ที่เลือกเข้าไป โดยข้ามคำที่มี `grade key + normalized word` ซ้ำอยู่แล้ว
 
 ผู้ใช้เลือก source ได้หลายไฟล์จาก UI หากไม่เลือกไฟล์เฉพาะ ระบบใช้ทุกไฟล์ที่รองรับใน `words_dir`
+
+เมื่อ import รวมหลาย source เช่น `app/assets/words/lot1` และ `app/assets/words/text` รายงาน duplicate ต้องนับข้าม source ด้วย หากคำเดียวกันอยู่ในระดับชั้นเดียวกันทั้ง DOCX และ TXT ต้องถือว่าเป็น duplicate ตามคีย์ `ป.x + คำ`
 
 ก่อน Reload ใน UI ระบบจะแสดง preview ให้ผู้ใช้ยืนยัน โดยสรุปจำนวน source, จำนวน cell คำที่อ่านได้, จำนวนคำไม่ซ้ำ และโหมด clear-all/append หากผู้ใช้ไม่ยืนยันจะไม่มีการเขียน database
 

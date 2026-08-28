@@ -8,7 +8,7 @@ class Base(DeclarativeBase):
 
 class Word(Base):
     __tablename__ = "words"
-    grade: Mapped[int] = mapped_column(Integer, primary_key=True)
+    grade: Mapped[str] = mapped_column(String(8), primary_key=True)
     normalized: Mapped[str] = mapped_column(String(512), primary_key=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     source_file: Mapped[str] = mapped_column(String(512), nullable=False)

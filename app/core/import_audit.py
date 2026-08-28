@@ -9,7 +9,7 @@ from typing import Callable, Iterable
 from app.core.contracts import WordEntry
 from app.core.review_registry import load_reviewed_suspicions
 from app.core.source_adapters import SourceAdapterRegistry, default_source_registry
-from app.core.source_contract import WordImportReport, collect_word_suspicions, validate_word_entries
+from app.core.source_contract import WordImportReport, collect_word_suspicions, grade_key, validate_word_entries
 
 AuditProgress = Callable[[int, int, str], None]
 
@@ -65,6 +65,20 @@ def _journal_folders(paths: list[Path]) -> list[Path]:
     return sorted(folders)
 
 
+def _suspicion_payload(item) -> dict:
+    payload = asdict(item)
+    payload["grade"] = grade_key(item.grade)
+    payload["text"] = " ".join(str(item.text).split())
+    return payload
+
+
+def _file_payload(item: SourceAuditFile) -> dict:
+    payload = asdict(item)
+    payload["suspicions"] = list(item.suspicions)
+    payload["unresolved_suspicions"] = list(item.unresolved_suspicions)
+    return payload
+
+
 def _write_source_journals(
     folders: list[Path],
     input_paths: list[Path],
@@ -73,7 +87,7 @@ def _write_source_journals(
     error: str | None = None,
 ) -> None:
     supported_names = {str(path) for path in supported_sources}
-    files_payload = [asdict(item) for item in result.files] if result else []
+    files_payload = [_file_payload(item) for item in result.files] if result else []
     payload = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "production_source_formats": [".docx", ".txt"],
@@ -134,8 +148,8 @@ def audit_word_sources(
                 status="REVIEW" if unresolved else "PASS",
                 total_cells=report.total_cells,
                 unique_words=report.unique_words,
-                suspicions=[asdict(item) for item in suspicions],
-                unresolved_suspicions=[asdict(item) for item in unresolved],
+                suspicions=[_suspicion_payload(item) for item in suspicions],
+                unresolved_suspicions=[_suspicion_payload(item) for item in unresolved],
             ))
             all_rows.extend(rows)
         except Exception as exc:
@@ -167,6 +181,6 @@ def write_audit_report(path: Path, result: SourceAuditResult) -> None:
             "total_cells": result.summary.total_cells,
             "unique_words": result.summary.unique_words,
         },
-        "files": [asdict(item) for item in result.files],
+        "files": [_file_payload(item) for item in result.files],
     }
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

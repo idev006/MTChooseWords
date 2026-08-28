@@ -44,7 +44,7 @@ MT Choose Words เป็นแอปพลิเคชันข้ามระ�
 - รองรับ Windows, macOS และ Linux
 - การสร้าง PDF ต้องทำงานเบื้องหลัง ไม่ทำให้ UI ค้าง
 - โครงสร้างต้องรองรับ pytest และ PyInstaller โดยไม่ต้องแก้ source code หลัก
-- ข้อมูลคำใช้ SQLite ผ่าน SQLAlchemy ORM และใช้ `grade + normalized word` เป็น primary key
+- ข้อมูลคำใช้ SQLite ผ่าน SQLAlchemy ORM และใช้ `ป.x + normalized word` เป็น primary key
 
 ## 5. ขอบเขตนอก MVP
 
