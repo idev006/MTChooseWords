@@ -45,6 +45,9 @@
 | TC-029 | Config | Committed config production-safe | `config.toml` ต้องชี้ DOCX/TXT source, ไม่ชี้ PDF, และใช้ฐานข้อมูลโครงการ |
 | TC-030 | Certification | Real DOCX+TXT source baseline | Source จริง 12 ไฟล์ต้องอ่านได้ 14,374 cells, 8,705 unique words, 5,669 duplicate cells |
 | TC-031 | Certification | Committed SQLite baseline | `app/mtchoosewords.sqlite3` ต้องมี 8,705 คำ, grade เป็น `ป.x`, ไม่มี duplicate key และไม่มี trim violation |
+| TC-032 | Unit | Import worker from UI button | ปุ่ม “นำเข้ารายการคำ” ต้องเพิ่มคำโดยไม่ล้าง database |
+| TC-033 | Unit | Clear worker from UI button | ปุ่ม “ล้างข้อมูลคำในฐานข้อมูล” ต้องล้างอย่างเดียวและไม่ import คำ |
+| TC-034 | UI smoke | Import tab button labels | หน้าต่างจริงต้องมีปุ่ม “ล้างข้อมูลคำในฐานข้อมูล” และ “นำเข้ารายการคำ” โดยไม่มี checkbox ล้างก่อน Reload |
 
 ## 3. Test result — 2026-07-26
 
@@ -81,7 +84,7 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 ผลลัพธ์:
 
 ```text
-48 passed in 81.91s
+51 passed
 ```
 
 Certification baseline:

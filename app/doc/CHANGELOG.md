@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-28 — Separate clear and import actions
+
+- ปรับ UI tab นำเข้าข้อมูลให้มีปุ่ม “ล้างข้อมูลคำในฐานข้อมูล” และ “นำเข้ารายการคำ” แยกกันชัดเจน
+- ปุ่มนำเข้ารายการคำจะ audit source แล้ว add/upsert คำโดยไม่ล้างข้อมูลเดิม
+- ปุ่มล้างข้อมูลคำต้องยืนยันก่อน และทำเฉพาะการล้าง database โดยไม่อ่าน source หรือ import คำ
+- เพิ่ม automated tests ยืนยันว่า import worker/clear worker ไม่ทำงานปนกัน และ UI smoke test ยืนยันชื่อปุ่มจริงบนหน้าต่าง
+
 ## 2026-08-28 — Canonical grade keys and combined duplicate audit
 
 - ปรับฐานข้อมูลให้เก็บระดับชั้นเป็น key รูปแบบ `ป.1` ถึง `ป.6` ตามที่ผู้ใช้กำหนด

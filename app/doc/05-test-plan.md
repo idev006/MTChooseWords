@@ -23,6 +23,7 @@
 | T-01P | Import journal | audit/reload ต้องสร้าง `mtchoosewords_import_journal.json` ในโฟลเดอร์ source ทุกครั้ง |
 | T-01Q | Canonical grade-word key | ฐานข้อมูลต้องเก็บระดับชั้นเป็น `ป.1`-`ป.6`, trim คำก่อนบันทึก และกันซ้ำด้วย `ป.x + normalized word` |
 | T-01R | Combined source duplicate audit | เมื่อ audit DOCX+TXT พร้อมกัน ต้องนับ duplicate ข้าม source ในระดับเดียวกันได้ถูกต้อง |
+| T-01S | Separate clear/import buttons | UI ต้องแยกปุ่มล้างข้อมูลคำออกจากปุ่มนำเข้ารายการคำ และ worker ของแต่ละปุ่มต้องไม่ทำงานปนกัน |
 | T-02 | PDF ไม่มี text layer | แจ้งปัญหา ไม่สร้างผลลัพธ์ผิดพลาดเงียบ ๆ |
 | T-03 | ขอคำมากกว่าคลัง | แจ้งเตือนและไม่สร้าง PDF |
 | T-04 | หลายหน้า | คำไม่ซ้ำกันข้ามทุกหน้า |
@@ -47,7 +48,7 @@
 - คำต้องถูก trim หัวท้ายและ normalize ช่องว่างก่อนสร้าง key
 - คำยาวผิดปกติควรถูก audit เพื่อ review ก่อน production import
 - UI และ command line ต้องใช้ audit gate เดียวกันก่อนเขียนฐานข้อมูล
-- งาน audit/reload ใน UI ต้องไม่ทำบน main thread
+- งาน audit/import/clear ใน UI ต้องไม่ทำบน main thread
 - Source extractor ต้องไม่ hard-code parser จนทดสอบด้วย adapter จำลองไม่ได้
 - PDF OCR diagnostic ต้องไม่ถือว่า confidence สูงเพียงอย่างเดียวเป็น production approval
 
@@ -78,4 +79,4 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 48 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, committed SQLite database มี 8,705 คำและไม่มี trim violation, PDF ถูกปิดจาก production import แต่ยังใช้ diagnostic ได้
+Baseline ล่าสุด: pytest ผ่าน 51 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, committed SQLite database มี 8,705 คำและไม่มี trim violation, PDF ถูกปิดจาก production import แต่ยังใช้ diagnostic ได้

@@ -114,16 +114,21 @@ app/doc/evidence/word_import_report.json
 
 ก่อนสร้าง key และบันทึกคำ ระบบต้อง trim หัวท้ายและ collapse ช่องว่างภายในคำให้เหลือรูปมาตรฐานเดียวกัน เช่น ` กา ` และ `กา` ในระดับ `ป.1` ต้องถือเป็นคำเดียวกัน
 
-Reload มี 2 โหมด:
+Command line reload มี 2 โหมด:
 
 - clear-all: ล้างคำทั้งหมดก่อน import ชุดใหม่
 - append: เพิ่มคำจาก source ที่เลือกเข้าไป โดยข้ามคำที่มี `grade key + normalized word` ซ้ำอยู่แล้ว
+
+UI แยกคำสั่งเป็น 2 ปุ่มเพื่อป้องกันความสับสน:
+
+- “ล้างข้อมูลคำในฐานข้อมูล”: ล้างคำทั้งหมดอย่างเดียว หลังผู้ใช้ยืนยัน
+- “นำเข้ารายการคำ”: audit source แล้วเพิ่ม/อัปเดตคำ โดยไม่ล้างข้อมูลเดิม
 
 ผู้ใช้เลือก source ได้หลายไฟล์จาก UI หากไม่เลือกไฟล์เฉพาะ ระบบใช้ทุกไฟล์ที่รองรับใน `words_dir`
 
 เมื่อ import รวมหลาย source เช่น `app/assets/words/lot1` และ `app/assets/words/text` รายงาน duplicate ต้องนับข้าม source ด้วย หากคำเดียวกันอยู่ในระดับชั้นเดียวกันทั้ง DOCX และ TXT ต้องถือว่าเป็น duplicate ตามคีย์ `ป.x + คำ`
 
-ก่อน Reload ใน UI ระบบจะแสดง preview ให้ผู้ใช้ยืนยัน โดยสรุปจำนวน source, จำนวน cell คำที่อ่านได้, จำนวนคำไม่ซ้ำ และโหมด clear-all/append หากผู้ใช้ไม่ยืนยันจะไม่มีการเขียน database
+ก่อนนำเข้ารายการคำใน UI ระบบจะแสดง preview ให้ผู้ใช้ยืนยัน โดยสรุปจำนวน source, จำนวน cell คำที่อ่านได้ และจำนวนคำไม่ซ้ำ หากผู้ใช้ไม่ยืนยันจะไม่มีการเขียน database
 
 Definition of Done สำหรับ content import คือ extractor ผ่าน automated tests, audit gate PASS, ผู้ใช้ยืนยัน preview, reload สำเร็จ, import report ตรงกับ source ที่ตั้งใจใช้ และไม่มี fail-closed warning เหลืออยู่
 

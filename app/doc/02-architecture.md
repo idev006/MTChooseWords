@@ -29,7 +29,7 @@ Assets
 
 | โมดูล | หน้าที่ |
 |---|---|
-| `app/ui/main_window.py` | UI แบบ 2 tab สำหรับนำเข้าข้อมูลและสร้างใบงาน, validation, progress และ worker thread |
+| `app/ui/main_window.py` | UI แบบ 2 tab สำหรับนำเข้าข้อมูลและสร้างใบงาน, validation, ปุ่มล้างข้อมูล/นำเข้าที่แยกกัน, progress และ worker thread |
 | `app/core/extractor.py` | ตรวจเส้นตาราง, อ่านเฉพาะ word cells, แก้ลำดับ Unicode ภาษาไทย และตรวจครบทุกหน้า |
 | `app/core/docx_extractor.py` | อ่านเฉพาะ cell ในตารางของไฟล์ Word `.docx` และผูกคำกับระดับชั้นจากชื่อไฟล์ |
 | `app/core/text_extractor.py` | อ่านไฟล์ `.txt` แบบหนึ่งคำต่อหนึ่งบรรทัดและผูกคำกับระดับชั้นจากชื่อไฟล์ |
@@ -86,7 +86,7 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 - `reload_words.py` และ UI ต้องผ่าน `import_audit.py` ก่อนเขียนฐานข้อมูล
 - Reload ที่ผ่าน audit จะสร้าง evidence report ที่ `app/doc/evidence/word_import_report.json`
 - ทุกครั้งที่ audit อ่าน source จะสร้าง `mtchoosewords_import_journal.json` ในโฟลเดอร์ที่อ่าน เพื่อบันทึก source, summary, PASS/REVIEW/FAIL และ error
-- UI รองรับการเลือกไฟล์ source เฉพาะชุด เลือกระหว่าง clear-all หรือ append และแสดง preview ก่อนยืนยันนำเข้า
+- UI รองรับการเลือกไฟล์ source เฉพาะชุด, ปุ่มล้างข้อมูลคำในฐานข้อมูลที่แยกจากปุ่มนำเข้ารายการคำ และแสดง preview ก่อนยืนยันนำเข้า
 
 ### PDF diagnostic-only contract
 
@@ -123,10 +123,12 @@ Pipeline ห้าม import ข้อมูลที่ไม่ผ่าน so
 
 DOCX และ TXT เป็น production path สำหรับความถูกต้องของคำ เพราะอ่านจากโครงสร้างที่ตรวจรับได้โดยตรง ส่วน PDF ถูกจำกัดเป็น diagnostic-only เพื่อป้องกันคำผิดเข้าสู่ฐานข้อมูล
 
-UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน การเขียนฐานข้อมูลจะเกิดเฉพาะเมื่อผู้ใช้กด Reload และยืนยัน preview หลัง audit ผ่านแล้ว
+UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน การเขียนฐานข้อมูลจะเกิดเฉพาะเมื่อผู้ใช้กด “นำเข้ารายการคำ” และยืนยัน preview หลัง audit ผ่านแล้ว
+
+การล้างฐานข้อมูลเป็นคำสั่งแยกต่างหาก ผู้ใช้ต้องกด “ล้างข้อมูลคำในฐานข้อมูล” และยืนยันก่อน ระบบจึงจะล้างคำทั้งหมด โดยไม่อ่าน source หรือ import คำในขั้นตอนเดียวกัน
 
 หน้าจอหลักแยก workflow เป็น tab `นำเข้าข้อมูล` สำหรับ source/audit/reload และ tab `สร้างใบงาน` สำหรับ grade filter, layout settings และ export PDF เพื่อลดความสับสนและลดโอกาสกดผิดขั้นตอน
 
-งานที่ใช้เวลานานต้องทำผ่าน worker thread ได้แก่ audit/reload คำศัพท์และ export PDF เพื่อให้หน้าจอยังตอบสนองระหว่างประมวลผล ผู้ใช้จะเห็น progress bar และข้อความสถานะของขั้นตอนปัจจุบัน
+งานที่ใช้เวลานานต้องทำผ่าน worker thread ได้แก่ audit/import คำศัพท์, clear database และ export PDF เพื่อให้หน้าจอยังตอบสนองระหว่างประมวลผล ผู้ใช้จะเห็น progress bar และข้อความสถานะของขั้นตอนปัจจุบัน
 
 PDF diagnostic command รายงาน progress ได้ระดับหน้าไฟล์ และใช้สำหรับ QA เพื่อดูว่าแต่ละหน้ามี table geometry หรืออ่านข้อความ cell ได้ผิดปกติหรือไม่ โดยไม่ import เข้าฐานข้อมูล

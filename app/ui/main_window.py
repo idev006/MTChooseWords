@@ -116,6 +116,26 @@ class WordImportWorker(QObject):
             self.failed.emit(traceback.format_exc())
 
 
+class ClearWordsWorker(QObject):
+    progress = Signal(int, str)
+    done = Signal()
+    failed = Signal(str)
+
+    def __init__(self, repository: WordStore):
+        super().__init__()
+        self.repository = repository
+
+    @Slot()
+    def run(self):
+        try:
+            self.progress.emit(35, "กำลังล้างข้อมูลคำในฐานข้อมูล")
+            self.repository.clear_all()
+            self.progress.emit(100, "ล้างข้อมูลคำเสร็จแล้ว")
+            self.done.emit()
+        except Exception:
+            self.failed.emit(traceback.format_exc())
+
+
 class MainWindow(QMainWindow):
     def __init__(self, root: Path, repository: WordStore | None = None, extractor: WordExtractor | None = None, exporter: PdfExporter | None = None):
         super().__init__()
@@ -213,8 +233,6 @@ class MainWindow(QMainWindow):
         source_layout.setContentsMargins(0, 0, 0, 0)
         source_layout.addWidget(self.source_files, 1)
         source_layout.addWidget(self.source_picker)
-        self.clear_before_reload = QCheckBox("ล้างคลังคำก่อน Reload")
-        self.clear_before_reload.setChecked(self.cfg.clear_words_before_import)
         self.orientation = QWidget()
         orientation_row = QHBoxLayout(self.orientation)
         orientation_row.setContentsMargins(0, 0, 0, 0)
@@ -243,14 +261,16 @@ class MainWindow(QMainWindow):
         import_layout = QVBoxLayout(import_tab)
         import_box = QGroupBox("ขั้นตอนที่ 1: นำเข้าคลังคำ (DOCX/TXT)")
         import_form = QGridLayout(import_box)
-        import_fields = [("ไฟล์คำศัพท์", source_row), ("โหมด Reload", self.clear_before_reload)]
+        import_fields = [("ไฟล์คำศัพท์", source_row)]
         for i, (label, widget) in enumerate(import_fields):
             import_form.addWidget(QLabel(label), i, 0)
             import_form.addWidget(widget, i, 1)
-        self.refresh = QPushButton("Reload คำจาก DOCX/TXT")
+        self.clear_words_button = QPushButton("ล้างข้อมูลคำในฐานข้อมูล")
+        self.import_words_button = QPushButton("นำเข้ารายการคำ")
         import_buttons = QHBoxLayout()
         import_buttons.addStretch()
-        import_buttons.addWidget(self.refresh)
+        import_buttons.addWidget(self.clear_words_button)
+        import_buttons.addWidget(self.import_words_button)
         import_layout.addWidget(import_box)
         import_layout.addLayout(import_buttons)
         import_layout.addStretch()
@@ -281,7 +301,8 @@ class MainWindow(QMainWindow):
         self.progress = QProgressBar(); self.progress.setRange(0, 100); self.progress.setValue(0)
         layout.addWidget(self.progress)
         self.status = QStatusBar(); self.setStatusBar(self.status)
-        self.refresh.clicked.connect(self._refresh_words)
+        self.clear_words_button.clicked.connect(self._clear_words)
+        self.import_words_button.clicked.connect(self._import_words)
         self.source_picker.clicked.connect(self._choose_sources)
         self.save.clicked.connect(self._save_config)
         self.output.clicked.connect(self._choose_output)
@@ -335,13 +356,13 @@ class MainWindow(QMainWindow):
             self.info.setText("ยังอ่านจำนวนคำในคลังไม่ได้")
 
     def _preview_message(self, total_cells: int, unique_words: int, source_count: int) -> str:
-        mode = "ล้างคลังคำเดิมก่อนนำเข้า" if self.clear_before_reload.isChecked() else "เพิ่มเข้าไปโดยไม่ล้างคำเดิม"
         return (
             "ตรวจ source ผ่านแล้ว\n\n"
             f"ไฟล์ที่เลือก: {source_count} ไฟล์\n"
             f"จำนวน cell คำที่อ่านได้: {total_cells}\n"
             f"จำนวนคำไม่ซ้ำที่จะใช้ได้: {unique_words}\n"
-            f"โหมด: {mode}\n\n"
+            "โหมด: นำเข้า/เพิ่มคำ โดยไม่ล้างข้อมูลเดิม\n\n"
+            "ถ้าต้องการเริ่มฐานข้อมูลใหม่ ให้กดปุ่ม 'ล้างข้อมูลคำในฐานข้อมูล' ก่อน\n\n"
             "ยืนยันให้นำคำชุดนี้เข้า database หรือไม่?"
         )
 
@@ -358,7 +379,7 @@ class MainWindow(QMainWindow):
         lines.append("ดูรายละเอียดได้ที่ app/doc/evidence/word_source_audit_report.json")
         return "\n".join(lines)
 
-    def _refresh_words(self):
+    def _import_words(self):
         self._set_import_busy(True, "กำลังตรวจ source คำศัพท์ กรุณารอสักครู่...")
         self.import_audit_thread = QThread()
         self.import_audit_worker = ImportAuditWorker(
@@ -378,9 +399,9 @@ class MainWindow(QMainWindow):
         self.import_audit_thread.start()
 
     def _set_import_busy(self, busy: bool, message: str = ""):
-        self.refresh.setEnabled(not busy)
+        self.import_words_button.setEnabled(not busy)
+        self.clear_words_button.setEnabled(not busy)
         self.source_picker.setEnabled(not busy)
-        self.clear_before_reload.setEnabled(not busy)
         self.save.setEnabled(not busy)
         self.output.setEnabled(not busy)
         self.generate.setEnabled(not busy)
@@ -394,19 +415,19 @@ class MainWindow(QMainWindow):
         if not audit.can_import or audit.import_report is None:
             self._set_import_busy(False)
             QMessageBox.warning(self, "ยัง Reload ไม่ได้", self._blocked_files_message(audit))
-            self.status.showMessage("Reload ถูกหยุดเพื่อรอตรวจรับ source")
+            self.status.showMessage("นำเข้าถูกหยุดเพื่อรอตรวจรับ source")
             return
 
         answer = QMessageBox.question(
             self,
-            "ยืนยัน Reload คำ",
+            "ยืนยันนำเข้ารายการคำ",
             self._preview_message(audit.summary.total_cells, audit.summary.unique_words, audit.source_count),
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No,
         )
         if answer != QMessageBox.Yes:
             self._set_import_busy(False)
-            self.status.showMessage("ยกเลิก Reload คำ")
+            self.status.showMessage("ยกเลิกนำเข้ารายการคำ")
             return
         self._start_word_import(audit)
 
@@ -414,7 +435,7 @@ class MainWindow(QMainWindow):
         self.progress.setValue(0)
         self.status.showMessage("กำลังนำคำเข้า database...")
         self.word_import_thread = QThread()
-        self.word_import_worker = WordImportWorker(audit, self.repo, self.clear_before_reload.isChecked(), self._import_report_path())
+        self.word_import_worker = WordImportWorker(audit, self.repo, False, self._import_report_path())
         self.word_import_worker.moveToThread(self.word_import_thread)
         self.word_import_thread.started.connect(self.word_import_worker.run)
         self.word_import_worker.progress.connect(self._on_progress)
@@ -439,8 +460,39 @@ class MainWindow(QMainWindow):
 
     def _import_failed(self, details: str):
         self._set_import_busy(False)
-        self.status.showMessage("Reload ไม่สำเร็จ")
-        QMessageBox.critical(self, "Reload ไม่สำเร็จ", details)
+        self.status.showMessage("งานนำเข้า/ล้างข้อมูลไม่สำเร็จ")
+        QMessageBox.critical(self, "งานนำเข้า/ล้างข้อมูลไม่สำเร็จ", details)
+
+    def _clear_words(self):
+        answer = QMessageBox.question(
+            self,
+            "ยืนยันล้างข้อมูลคำ",
+            "ต้องการล้างข้อมูลคำทั้งหมดในฐานข้อมูลหรือไม่?\n\nการล้างข้อมูลจะไม่ลบไฟล์ source DOCX/TXT และสามารถนำเข้ารายการคำใหม่ได้ภายหลัง",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if answer != QMessageBox.Yes:
+            self.status.showMessage("ยกเลิกการล้างข้อมูลคำ")
+            return
+        self._set_import_busy(True, "กำลังล้างข้อมูลคำในฐานข้อมูล...")
+        self.clear_words_thread = QThread()
+        self.clear_words_worker = ClearWordsWorker(self.repo)
+        self.clear_words_worker.moveToThread(self.clear_words_thread)
+        self.clear_words_thread.started.connect(self.clear_words_worker.run)
+        self.clear_words_worker.progress.connect(self._on_progress)
+        self.clear_words_worker.done.connect(self._clear_words_finished)
+        self.clear_words_worker.failed.connect(self._import_failed)
+        self.clear_words_worker.done.connect(self.clear_words_thread.quit)
+        self.clear_words_worker.failed.connect(self.clear_words_thread.quit)
+        self.clear_words_thread.finished.connect(self.clear_words_worker.deleteLater)
+        self.clear_words_thread.finished.connect(self.clear_words_thread.deleteLater)
+        self.clear_words_thread.start()
+
+    def _clear_words_finished(self):
+        self._set_import_busy(False)
+        self.progress.setValue(100)
+        self._refresh_word_status()
+        self.status.showMessage("ล้างข้อมูลคำในฐานข้อมูลสำเร็จ")
 
     def _selected_grades(self) -> list[int]:
         return [grade for grade, checkbox in self.grade_checks.items() if checkbox.isChecked()]
@@ -452,7 +504,6 @@ class MainWindow(QMainWindow):
         self.cfg.title = self.title.text(); self.cfg.title_font_size = self.title_size.slider.value(); self.cfg.title_color = self.title_color.text(); self.cfg.title_bgcolor = self.title_bgcolor.text(); self.cfg.title_margin_top_px = self.title_margin.slider.value(); self.cfg.title_margin_bottom_px = self.title_margin_bottom.slider.value(); self.cfg.title_padding_px = self.title_padding.slider.value(); self.cfg.seed = self.seed.value()
         self.cfg.orientation = "portrait" if self.portrait.isChecked() else "landscape"
         self.cfg.selected_grades = self._selected_grades()
-        self.cfg.clear_words_before_import = self.clear_before_reload.isChecked()
         self.cfg.save(self.config_path)
         self.status.showMessage("บันทึกการตั้งค่าแล้ว")
 
