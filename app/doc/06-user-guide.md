@@ -48,6 +48,20 @@ MTChooseWords.bat
 
 ผลลัพธ์อยู่ที่ `dist/MTChooseWords.exe` บน Windows โดย source เดียวกันสามารถ build บน macOS/Linux ด้วย PyInstaller ของระบบนั้น
 
+สำหรับการเผยแพร่แบบ portable ให้ใช้:
+
+```text
+Build_Portable_MTChooseWords.bat
+```
+
+ผลลัพธ์อยู่ที่:
+
+```text
+dist\MTChooseWords_Portable
+```
+
+ผู้ใช้ปลายทางเปิดโปรแกรมจาก `Run_MTChooseWords.bat` ภายในโฟลเดอร์ portable
+
 ## ขั้นตอนใช้งาน
 
 หน้าจอหลักแบ่งเป็น 2 tab ตามงาน:

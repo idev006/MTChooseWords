@@ -125,7 +125,7 @@ Source cells: 14374; duplicates removed: 5669
 ผลลัพธ์:
 
 ```text
-49 passed in 23.66s
+51 passed in 23.26s
 ```
 
 Certification baseline:
@@ -160,6 +160,21 @@ Source cells: 14374; duplicates removed: 5669
 ```
 
 ผลลัพธ์: **ผ่าน** — สร้าง `dist/MTChooseWords.exe` สำเร็จ
+
+Portable readiness:
+
+```text
+dist/MTChooseWords_Portable created
+dist/MTChooseWords_Portable.zip created
+Portable folder size: about 83 MB
+SQLite rows: 8,705
+Duplicate grade+word keys: 0
+Absolute source paths: 0
+PDF files in portable folder: 0
+DOC files in portable folder: 0
+Retired PDF/OCR evidence folders: 0
+Portable EXE smoke test: launched
+```
 
 ## 6. Manual test cases ที่ยังต้องทำบน OS อื่น
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-08-29 — Portable release preparation
+
+- เพิ่ม `scripts/build_portable.py` และ `Build_Portable_MTChooseWords.bat` สำหรับสร้างโฟลเดอร์ `dist/MTChooseWords_Portable` และไฟล์ `dist/MTChooseWords_Portable.zip`
+- เพิ่ม `Run_MTChooseWords_Portable.bat` สำหรับเปิด EXE จาก portable folder พร้อมตรวจ config, database และ fonts
+- ปรับ PyInstaller spec ไม่ให้ bundle `config.toml` และ `app/assets` เข้า EXE เพื่อหลีกเลี่ยงการพ่วง PDF/source เก่าและให้ config/database/assets อยู่ข้างโปรแกรมแบบแก้ไขได้
+- ตั้งค่า release config กลับไปใช้ source DOCX/TXT ทั้ง `app/assets/words/lot1` และ `app/assets/words/text` พร้อมเลือก ป.1-ป.6 เป็นค่าเริ่มต้น
+- เพิ่มเอกสาร `12-portable-release-checklist.md` และ automated tests สำหรับ portable packaging boundary
+
 ## 2026-08-29 — Remove PDF/OCR word reader
 
 - ปรับ `Run_MTChooseWords.bat` ให้เป็น batch file สำหรับเปิดโปรแกรมโดยตรง พร้อมตรวจ `.venv` และ `config.toml`

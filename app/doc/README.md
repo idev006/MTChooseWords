@@ -12,6 +12,7 @@
 - [Test Cases และ Test Report](07-test-cases.md)
 - [Content Import Pipeline](10-content-import-pipeline.md)
 - [Feature Recommendations](11-feature-recommendations.md)
+- [Portable Release Checklist](12-portable-release-checklist.md)
 - [คู่มือการติดตั้งและใช้งาน](06-user-guide.md)
 - [AI Word Review Evidence](evidence/ai_word_review_2026-08-26.md)
 - [บันทึกการเปลี่ยนแปลง](CHANGELOG.md)
