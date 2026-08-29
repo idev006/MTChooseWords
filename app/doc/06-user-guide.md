@@ -21,10 +21,14 @@ batch file นี้ใช้เฉพาะ `.venv` ของโครงกา
 วิธีที่ง่ายที่สุดบน Windows คือดับเบิลคลิกไฟล์:
 
 ```text
-MTChooseWords.bat
+Run_MTChooseWords.bat
 ```
 
-จากเมนูสามารถเปิดโปรแกรม, นำเข้าคำจาก DOCX/TXT, รัน tests หรือ Build EXE ได้
+หากต้องการเมนูรวมสำหรับเปิดโปรแกรม, นำเข้าคำจาก DOCX/TXT, รัน tests หรือ Build EXE ให้ใช้:
+
+```text
+MTChooseWords.bat
+```
 
 ```powershell
 .\.venv\Scripts\python.exe -m app.main

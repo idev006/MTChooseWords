@@ -2,6 +2,7 @@
 
 ## 2026-08-29 — Remove PDF/OCR word reader
 
+- ปรับ `Run_MTChooseWords.bat` ให้เป็น batch file สำหรับเปิดโปรแกรมโดยตรง พร้อมตรวจ `.venv` และ `config.toml`
 - ถอด core reader, diagnostic scripts, OCR evidence และ tests ที่ใช้สำหรับอ่านคำจาก PDF/OCR ออกจาก local scope
 - ถอด dependency เฉพาะทางของ PDF/OCR reader ออกจาก `requirements.txt` และ PyInstaller spec
 - เพิ่ม `Cleanup_Unused_PDF_OCR_Libs.bat` สำหรับถอน library PDF/OCR reader เก่าจาก `.venv` ของโครงการแบบมีขั้นตอนยืนยัน
