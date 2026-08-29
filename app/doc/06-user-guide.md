@@ -8,6 +8,14 @@
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
+หากเครื่องพัฒนาเคยติดตั้ง library สำหรับอ่านคำจาก PDF/OCR ไว้ สามารถล้างออกด้วย batch file นี้:
+
+```text
+Cleanup_Unused_PDF_OCR_Libs.bat
+```
+
+batch file นี้ใช้เฉพาะ `.venv` ของโครงการ และจะถามยืนยันก่อนถอน library
+
 ## เริ่มโปรแกรม
 
 วิธีที่ง่ายที่สุดบน Windows คือดับเบิลคลิกไฟล์:

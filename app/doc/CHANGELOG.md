@@ -4,6 +4,7 @@
 
 - ถอด core reader, diagnostic scripts, OCR evidence และ tests ที่ใช้สำหรับอ่านคำจาก PDF/OCR ออกจาก local scope
 - ถอด dependency เฉพาะทางของ PDF/OCR reader ออกจาก `requirements.txt` และ PyInstaller spec
+- เพิ่ม `Cleanup_Unused_PDF_OCR_Libs.bat` สำหรับถอน library PDF/OCR reader เก่าจาก `.venv` ของโครงการแบบมีขั้นตอนยืนยัน
 - ปรับ source adapter ให้รองรับเฉพาะ DOCX/TXT สำหรับการนำเข้าคำ
 - เก็บ PDF export สำหรับใบงานไว้ผ่าน ReportLab ตามเดิม
 - ปรับเอกสาร, test cases และเมนู batch ให้สื่อสารชัดว่า import คำอ่านจาก DOCX/TXT เท่านั้น
