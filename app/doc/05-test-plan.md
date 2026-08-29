@@ -80,4 +80,4 @@
 .\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 51 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, committed SQLite database มี 8,705 คำ, ไม่มี trim violation และไม่มี absolute source path; portable folder build ผ่านและไม่มี `.pdf`/`.doc` source ปนใน release folder
+Baseline ล่าสุด: pytest ผ่าน 51 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, committed SQLite database มี 8,705 คำ, ไม่มี trim violation และไม่มี absolute source path; portable one-dir build ผ่าน, ZIP แตกไป Temp path ใหม่แล้วเปิดผ่าน batch ได้โดยไม่เกิด `QtCore` DLL load error และไม่มี `.pdf`/`.doc` source ปนใน release folder

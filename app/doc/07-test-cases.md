@@ -164,16 +164,17 @@ Source cells: 14374; duplicates removed: 5669
 Portable readiness:
 
 ```text
-dist/MTChooseWords_Portable created
+dist/MTChooseWords_Portable created from PyInstaller one-dir runtime
 dist/MTChooseWords_Portable.zip created
-Portable folder size: about 83 MB
+Portable zip size: about 80.6 MB
+Portable file count: 293
 SQLite rows: 8,705
 Duplicate grade+word keys: 0
 Absolute source paths: 0
 PDF files in portable folder: 0
 DOC files in portable folder: 0
 Retired PDF/OCR evidence folders: 0
-Portable EXE smoke test: launched
+Portable batch smoke test from extracted Temp folder: launched without QtCore DLL load error
 ```
 
 ## 6. Manual test cases ที่ยังต้องทำบน OS อื่น

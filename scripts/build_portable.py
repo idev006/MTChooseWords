@@ -10,7 +10,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
-EXE = DIST / "MTChooseWords.exe"
+BUILD_APP = DIST / "MTChooseWords"
+EXE = BUILD_APP / "MTChooseWords.exe"
 PORTABLE = DIST / "MTChooseWords_Portable"
 PORTABLE_ZIP = DIST / "MTChooseWords_Portable.zip"
 
@@ -20,6 +21,25 @@ def _copy_file(source: Path, target: Path) -> None:
         raise FileNotFoundError(source)
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, target)
+
+
+def _copy_tree(
+    source: Path,
+    target: Path,
+    excluded_parts: set[str] | None = None,
+) -> None:
+    if not source.exists():
+        raise FileNotFoundError(source)
+    target.mkdir(parents=True, exist_ok=True)
+    for item in source.rglob("*"):
+        relative = item.relative_to(source)
+        if excluded_parts and any(part in excluded_parts for part in relative.parts):
+            continue
+        destination = target / relative
+        if item.is_dir():
+            destination.mkdir(parents=True, exist_ok=True)
+        else:
+            _copy_file(item, destination)
 
 
 def _copy_tree_filtered(
@@ -78,7 +98,7 @@ def build_portable(skip_build: bool = False) -> Path:
             raise RuntimeError(f"Refusing to delete unexpected path: {resolved}")
         _remove_tree_with_retry(PORTABLE)
 
-    _copy_file(EXE, PORTABLE / "MTChooseWords.exe")
+    _copy_tree(BUILD_APP, PORTABLE)
     _copy_file(ROOT / "Run_MTChooseWords_Portable.bat", PORTABLE / "Run_MTChooseWords.bat")
     _copy_file(ROOT / "config.toml", PORTABLE / "config.toml")
     _copy_file(ROOT / "app/mtchoosewords.sqlite3", PORTABLE / "app/mtchoosewords.sqlite3")
@@ -108,7 +128,7 @@ def main() -> int:
     target = build_portable(skip_build=args.skip_build)
     print(f"Portable package: {target}")
     print(f"Portable zip: {PORTABLE_ZIP}")
-    print("Included: EXE, config.toml, SQLite database, fonts, DOCX/TXT word sources, documentation, output folder")
+    print("Included: PyInstaller runtime folder, config.toml, SQLite database, fonts, DOCX/TXT word sources, documentation, output folder")
     print("Excluded: PDF source files, .doc source files, virtual environment, build cache")
     return 0
 

@@ -4,7 +4,7 @@
 
 Portable release ต้องแจกเป็นโฟลเดอร์ `MTChooseWords_Portable` ไม่ใช่ EXE เดี่ยว เพราะโปรแกรมต้องอ่าน/เขียนไฟล์ข้างตัวเอง:
 
-- `MTChooseWords.exe`
+- `MTChooseWords.exe` และ PyInstaller runtime files ข้าง EXE
 - `Run_MTChooseWords.bat`
 - `config.toml`
 - `app/mtchoosewords.sqlite3`
@@ -53,13 +53,15 @@ Build_Portable_MTChooseWords.bat
 
 - สร้าง `dist/MTChooseWords_Portable` สำเร็จ
 - สร้าง `dist/MTChooseWords_Portable.zip` สำเร็จ
-- ขนาด portable folder ประมาณ 83 MB
-- มี `MTChooseWords.exe`, `Run_MTChooseWords.bat`, `config.toml`, SQLite database, fonts, DOCX/TXT sources และ `app/output`
+- ใช้ PyInstaller one-dir runtime เพื่อให้ Qt DLL อยู่ข้าง EXE และลดความเสี่ยง `QtCore` DLL load error
+- ZIP ขนาดประมาณ 80.6 MB
+- มี 293 ไฟล์ใน portable folder เพราะใช้ PyInstaller one-dir runtime
+- มี `MTChooseWords.exe`, PyInstaller runtime files, `Run_MTChooseWords.bat`, `config.toml`, SQLite database, fonts, DOCX/TXT sources และ `app/output`
 - ไม่มีไฟล์ `.pdf` และ `.doc` ใน portable folder
 - ไม่มีโฟลเดอร์ evidence เก่าของ PDF/OCR ใน portable folder
 - SQLite database มี 8,705 คำ
 - ไม่พบ duplicate key แบบ `ระดับชั้น + normalized word`
 - ไม่พบ absolute source path ใน SQLite database
 - ไม่พบ absolute path ใน `config.toml`
-- Smoke test: `MTChooseWords.exe` ใน portable folder เริ่ม process ได้
+- Smoke test: แตก ZIP ไป Temp path ใหม่ แล้ว `Run_MTChooseWords.bat` เปิด `MTChooseWords.exe` ได้โดยไม่เกิด `QtCore` DLL load error
 - Automated tests: 51 passed
