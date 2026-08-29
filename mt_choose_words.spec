@@ -16,6 +16,10 @@ a = Analysis(
     excludes=[],
     noarchive=False,
 )
+a.binaries = [
+    item for item in a.binaries
+    if Path(item[0]).name.lower() not in {"icudt78.dll", "icuuc.dll"}
+]
 pyz = PYZ(a.pure)
 exe = EXE(
     pyz,

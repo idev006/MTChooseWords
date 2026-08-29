@@ -7,6 +7,8 @@ def test_pyinstaller_spec_does_not_bundle_word_assets_into_exe():
     assert "app\" / \"assets" not in spec
     assert "app/assets" not in spec
     assert "config.toml" not in spec
+    assert "icudt78.dll" in spec
+    assert "icuuc.dll" in spec
 
 
 def test_portable_builder_excludes_retired_pdf_and_doc_sources():

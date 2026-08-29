@@ -51,6 +51,7 @@
 | TC-035 | Unit | PathManager relative conversion | Path ใต้ project root ต้องถูกบันทึกเป็น relative และ path นอก root ต้องคงค่าไว้ |
 | TC-036 | Certification | Portable evidence/database paths | Config, journal, report และ SQLite `source_file` ต้องไม่มี absolute project path |
 | TC-037 | Unit | Removed local PDF/OCR reader | ไม่มี core reader, script หรือ evidence generator สำหรับอ่านคำจาก PDF/OCR |
+| TC-038 | Portable visual smoke | แตก ZIP ไป Temp path ใหม่และเปิดด้วย batch file | ต้องเห็นหน้าต่างโปรแกรมจริงและไม่มี error dialog `QtCore` |
 
 ## 3. Test result — 2026-07-26
 
@@ -166,15 +167,18 @@ Portable readiness:
 ```text
 dist/MTChooseWords_Portable created from PyInstaller one-dir runtime
 dist/MTChooseWords_Portable.zip created
-Portable zip size: about 80.6 MB
-Portable file count: 293
+Portable zip size: about 63.8 MB
+Portable file count: 291
 SQLite rows: 8,705
 Duplicate grade+word keys: 0
 Absolute source paths: 0
 PDF files in portable folder: 0
 DOC files in portable folder: 0
 Retired PDF/OCR evidence folders: 0
-Portable batch smoke test from extracted Temp folder: launched without QtCore DLL load error
+Portable _internal icu*.dll files: 0
+Portable visual smoke test from extracted Temp folder: visible UI window `MT Choose Words — สร้าง PDF คำศัพท์`
+QtCore error dialog: not found
+Screenshot evidence: C:\Users\66996\AppData\Local\Temp\mtchoosewords_portable_ui_visible_after_icu_fix.png
 ```
 
 ## 6. Manual test cases ที่ยังต้องทำบน OS อื่น
@@ -182,6 +186,7 @@ Portable batch smoke test from extracted Temp folder: launched without QtCore DL
 - เปิด UI บน macOS และ Linux
 - เลือกฟอนท์ผ่าน dialog
 - กด Reload จาก UI และตรวจ status/progress
+- คลิกปุ่มนำเข้า/ล้างข้อมูลบน packaged EXE พร้อม test database สำเนา
 - สร้าง PDF แนวตั้งและแนวนอน
 - เปิด PDF ด้วย viewer ของแต่ละ OS
 - ทดสอบ path ที่มี Unicode และ path ที่ไม่มีสิทธิ์เขียน

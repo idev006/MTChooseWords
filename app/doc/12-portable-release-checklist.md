@@ -40,6 +40,8 @@ Build_Portable_MTChooseWords.bat
 ## Acceptance checks
 
 - เปิด `dist/MTChooseWords_Portable\Run_MTChooseWords.bat` ได้
+- แตก `dist\MTChooseWords_Portable.zip` ไป path ใหม่ แล้วเปิด `Run_MTChooseWords.bat` ได้
+- ต้องเห็นหน้าต่างโปรแกรมจริง ไม่ใช่ตรวจแค่ process
 - สร้าง `dist\MTChooseWords_Portable.zip` สำหรับส่งต่อได้
 - โปรแกรมเห็นจำนวนคำใน database
 - เลือกฟอนท์ได้จาก `app/assets/fonts`
@@ -54,14 +56,17 @@ Build_Portable_MTChooseWords.bat
 - สร้าง `dist/MTChooseWords_Portable` สำเร็จ
 - สร้าง `dist/MTChooseWords_Portable.zip` สำเร็จ
 - ใช้ PyInstaller one-dir runtime เพื่อให้ Qt DLL อยู่ข้าง EXE และลดความเสี่ยง `QtCore` DLL load error
-- ZIP ขนาดประมาณ 80.6 MB
-- มี 293 ไฟล์ใน portable folder เพราะใช้ PyInstaller one-dir runtime
+- กัน `icudt78.dll` และ `icuuc.dll` ไม่ให้ถูก bundle จาก runtime อื่นในเครื่องพัฒนา เพราะเคยทำให้ `PySide6.QtCore` ขึ้น `DLL load failed`
+- ZIP ขนาดประมาณ 63.8 MB
+- มี 291 ไฟล์ใน portable folder เพราะใช้ PyInstaller one-dir runtime
 - มี `MTChooseWords.exe`, PyInstaller runtime files, `Run_MTChooseWords.bat`, `config.toml`, SQLite database, fonts, DOCX/TXT sources และ `app/output`
+- ไม่มี `icu*.dll` ใน portable `_internal`
 - ไม่มีไฟล์ `.pdf` และ `.doc` ใน portable folder
 - ไม่มีโฟลเดอร์ evidence เก่าของ PDF/OCR ใน portable folder
 - SQLite database มี 8,705 คำ
 - ไม่พบ duplicate key แบบ `ระดับชั้น + normalized word`
 - ไม่พบ absolute source path ใน SQLite database
 - ไม่พบ absolute path ใน `config.toml`
-- Smoke test: แตก ZIP ไป Temp path ใหม่ แล้ว `Run_MTChooseWords.bat` เปิด `MTChooseWords.exe` ได้โดยไม่เกิด `QtCore` DLL load error
-- Automated tests: 51 passed
+- Visual smoke test: แตก ZIP ไป Temp path ใหม่ เปิด `Run_MTChooseWords.bat`, เห็นหน้าต่าง `MT Choose Words — สร้าง PDF คำศัพท์` พร้อม tab นำเข้า/สร้างใบงาน และไม่เกิด error dialog `QtCore`
+- Screenshot evidence: `C:\Users\66996\AppData\Local\Temp\mtchoosewords_portable_ui_visible_after_icu_fix.png`
+- Automated tests: 51 passed in 34.96s
