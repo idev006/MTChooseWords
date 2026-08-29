@@ -10,6 +10,7 @@
 - ตั้งค่า release config กลับไปใช้ source DOCX/TXT ทั้ง `app/assets/words/lot1` และ `app/assets/words/text` พร้อมเลือก ป.1-ป.6 เป็นค่าเริ่มต้น
 - เพิ่มเอกสาร `12-portable-release-checklist.md` และ automated tests สำหรับ portable packaging boundary
 - เพิ่ม visual smoke test จาก ZIP ที่แตกไป Temp path ใหม่ โดยยืนยันว่าเห็นหน้าต่าง `MT Choose Words — สร้าง PDF คำศัพท์` จริงและไม่มี dialog error `QtCore`
+- ระบุชัดเจนว่าห้าม zip จาก root โครงการหรือรายการ developer files ที่เลือกเอง ต้องแจกเฉพาะ `dist\MTChooseWords_Portable.zip` ที่ออกจาก build pipeline
 
 ## 2026-08-29 — Remove PDF/OCR word reader
 

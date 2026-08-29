@@ -15,6 +15,50 @@ Portable release ต้องแจกเป็นโฟลเดอร์ `MTCh
 - `app/doc`
 - `app/output`
 
+## What to zip for users
+
+ห้าม zip จาก root โครงการโดยตรง แม้จะเลือกเฉพาะรายการที่ใช้พัฒนา เพราะจะปน source code, test, build tool และไฟล์สำหรับ developer เข้าไปในชุดผู้ใช้
+
+ชุดที่ต้อง zip แจกผู้ใช้มีเพียง:
+
+```text
+dist\MTChooseWords_Portable
+```
+
+ไฟล์ zip ที่ใช้ส่งต่อผู้ใช้ต้องมาจาก build pipeline เท่านั้น:
+
+```text
+dist\MTChooseWords_Portable.zip
+```
+
+ผู้ใช้ปลายทางต้องทำเพียง:
+
+1. แตก `MTChooseWords_Portable.zip`
+2. เปิด `Run_MTChooseWords.bat`
+3. ใช้งานโปรแกรม
+
+## Developer-only project files
+
+รายการเหล่านี้เก็บไว้ใน repository สำหรับพัฒนา/build/test ได้ แต่ไม่ควรอยู่ใน zip ที่ส่งให้ผู้ใช้:
+
+- `app` source tree จาก root โครงการ
+- `scripts`
+- `tests`
+- `alembic`
+- `.gitignore`
+- `alembic.ini`
+- `Build_Portable_MTChooseWords.bat`
+- `Cleanup_Unused_PDF_OCR_Libs.bat`
+- root `config.toml`
+- `mt_choose_words.spec`
+- `MTChooseWords.bat`
+- `pyproject.toml`
+- `requirements.txt`
+- `Run_MTChooseWords.bat`
+- `Run_MTChooseWords_Portable.bat`
+
+หมายเหตุ: ใน portable package จะมี `app`, `config.toml` และ `Run_MTChooseWords.bat` เช่นกัน แต่เป็นสำเนาที่ build script คัดเฉพาะ runtime assets/config/database ที่จำเป็นแล้ว ไม่ใช่การ zip root โครงการทั้งชุด
+
 ## Build command
 
 ```powershell
