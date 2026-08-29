@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-08-29 — Remove PDF/OCR word reader
+
+- ถอด core reader, diagnostic scripts, OCR evidence และ tests ที่ใช้สำหรับอ่านคำจาก PDF/OCR ออกจาก local scope
+- ถอด dependency เฉพาะทางของ PDF/OCR reader ออกจาก `requirements.txt` และ PyInstaller spec
+- ปรับ source adapter ให้รองรับเฉพาะ DOCX/TXT สำหรับการนำเข้าคำ
+- เก็บ PDF export สำหรับใบงานไว้ผ่าน ReportLab ตามเดิม
+- ปรับเอกสาร, test cases และเมนู batch ให้สื่อสารชัดว่า import คำอ่านจาก DOCX/TXT เท่านั้น
+
+## 2026-08-28 — Portable path manager
+
+- เพิ่ม `PathManager` กลางสำหรับ resolve path จาก application root ทั้ง source mode และ PyInstaller mode
+- ปรับ UI, config และ scripts ให้ใช้ relative project paths สำหรับ config, source, database, output และ evidence report
+- ปรับ journal/import/audit reports และ SQLite `source_file` ให้เก็บ path แบบ relative เมื่ออยู่ใต้ project root
+- เพิ่ม automated tests กัน absolute path หลุดใน config/evidence/database และทดสอบ path manager behavior
+
 ## 2026-08-28 — Separate clear and import actions
 
 - ปรับ UI tab นำเข้าข้อมูลให้มีปุ่ม “ล้างข้อมูลคำในฐานข้อมูล” และ “นำเข้ารายการคำ” แยกกันชัดเจน

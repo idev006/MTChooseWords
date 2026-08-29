@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from app.core.import_audit import audit_word_sources
+from app.core.paths import PathManager
 from app.core.source_adapters import default_source_registry
 from app.core.text_extractor import extract_text_words
 from app.core.word_source_extractor import TableWordSourceExtractor
@@ -41,7 +42,7 @@ def test_audit_writes_source_folder_journal(tmp_path):
     source = tmp_path / "คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt"
     source.write_text("ภูเขา\nทะเล\nภูเขา\n", encoding="utf-8")
 
-    audit = audit_word_sources(tmp_path)
+    audit = audit_word_sources(tmp_path, path_manager=PathManager(tmp_path))
 
     journal = tmp_path / "mtchoosewords_import_journal.json"
     assert journal.exists()
@@ -49,6 +50,8 @@ def test_audit_writes_source_folder_journal(tmp_path):
     assert '"production_source_formats": [' in text
     assert '"unique_words": 2' in text
     assert '"grade": "ป.3"' in text
+    assert str(tmp_path) not in text
+    assert audit.rows[0].source_file == "คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt"
     assert audit.summary.total_cells == 3
 
 

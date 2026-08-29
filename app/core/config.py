@@ -6,6 +6,8 @@ from typing import Any
 
 from tomlkit import dumps, parse
 
+from app.core.paths import PathManager
+
 
 @dataclass
 class AppConfig:
@@ -76,5 +78,7 @@ class AppConfig:
         path.write_text(dumps(doc), encoding="utf-8")
 
     def resolve(self, value: str) -> Path:
-        path = Path(value)
-        return path if path.is_absolute() else Path.cwd() / path
+        return PathManager().resolve(value)
+
+    def portable_path(self, value: str | Path, root: Path | None = None) -> str:
+        return PathManager(root).to_config_value(value)

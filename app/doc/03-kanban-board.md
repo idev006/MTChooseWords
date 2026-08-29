@@ -14,8 +14,6 @@
 
 - [x] สร้างโครงสร้างโปรเจกต์ Python 3.12
 - [x] ติดตั้ง PySide6, SQLAlchemy, Alembic, ReportLab, pypdf, Pillow, fonttools, tomlkit
-- [x] สกัดคำจาก PDF และจัดเก็บใน SQLite
-- [x] สกัดคำจากเซลล์ตารางทุกหน้าและแก้ลำดับวรรณยุกต์ภาษาไทย
 - [x] เพิ่ม Reload ที่ล้างคลังคำเดิมก่อน import ใหม่
 - [x] สร้าง UI ภาษาไทย
 - [x] สร้าง PDF A4 แนวตั้ง/แนวนอน
@@ -33,6 +31,7 @@
 - [x] แยกหน้าจอเป็น tab นำเข้าข้อมูลและ tab สร้างใบงาน
 - [x] ย้าย audit/reload ไปทำใน worker thread พร้อม progress/status
 - [x] แยกปุ่ม “ล้างข้อมูลคำในฐานข้อมูล” และ “นำเข้ารายการคำ” เพื่อป้องกันความสับสน
+- [x] ถอดโค้ดอ่านคำจาก PDF/OCR และ dependency เฉพาะทางออกจาก local scope
 
 ### In Progress
 
@@ -45,12 +44,10 @@
 - [ ] เพิ่ม color palette editor ใน UI
 - [ ] เพิ่มปุ่มเปิดโฟลเดอร์ output
 - [ ] เพิ่มระบบ issue report UI แบบเปิดดูรายการ REVIEW รายคำได้
-- [ ] เพิ่ม visual diff/review สำหรับ PDF source ที่ text layer ไม่น่าเชื่อถือ
 - [ ] เพิ่ม migration revision แรกของ Alembic
 
 ### Backlog
 
-- [ ] รองรับ OCR สำหรับ PDF สแกน
 - [ ] เพิ่ม theme/layout presets
 - [ ] เพิ่ม installer Windows/macOS/Linux
 - [ ] เพิ่ม automated CI matrix ทั้งสามระบบ

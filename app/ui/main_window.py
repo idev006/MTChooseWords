@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 from app.core.config import AppConfig
 from app.core.contracts import PdfExporter, WordExtractor, WordStore
 from app.core.import_audit import audit_word_sources, write_audit_report
+from app.core.paths import PathManager
 from app.core.pdf_generator import ReportLabPdfExporter
 from app.core.source_contract import write_import_report
 from app.core.word_source_extractor import TableWordSourceExtractor
@@ -59,11 +60,12 @@ class ImportAuditWorker(QObject):
     done = Signal(object)
     failed = Signal(str)
 
-    def __init__(self, sources, review_registry_path: Path, audit_report_path: Path):
+    def __init__(self, sources, review_registry_path: Path, audit_report_path: Path, path_manager: PathManager | None = None):
         super().__init__()
         self.sources = sources
         self.review_registry_path = review_registry_path
         self.audit_report_path = audit_report_path
+        self.path_manager = path_manager or PathManager()
 
     @Slot()
     def run(self):
@@ -73,9 +75,9 @@ class ImportAuditWorker(QObject):
                 self.progress.emit(max(5, percent), message)
 
             self.progress.emit(3, "กำลังเริ่มตรวจ source คำศัพท์")
-            audit = audit_word_sources(self.sources, self.review_registry_path, progress=update)
+            audit = audit_word_sources(self.sources, self.review_registry_path, progress=update, path_manager=self.path_manager)
             self.progress.emit(95, "กำลังบันทึกรายงาน audit")
-            write_audit_report(self.audit_report_path, audit)
+            write_audit_report(self.audit_report_path, audit, self.path_manager)
             self.progress.emit(100, "ตรวจ source เสร็จแล้ว")
             self.done.emit(audit)
         except Exception:
@@ -87,12 +89,13 @@ class WordImportWorker(QObject):
     done = Signal(int, str)
     failed = Signal(str)
 
-    def __init__(self, audit, repository: WordStore, clear_before_import: bool, import_report_path: Path):
+    def __init__(self, audit, repository: WordStore, clear_before_import: bool, import_report_path: Path, path_manager: PathManager | None = None):
         super().__init__()
         self.audit = audit
         self.repository = repository
         self.clear_before_import = clear_before_import
         self.import_report_path = import_report_path
+        self.path_manager = path_manager or PathManager()
 
     @Slot()
     def run(self):
@@ -109,7 +112,7 @@ class WordImportWorker(QObject):
                 count = self.repository.add_words(self.audit.rows)
                 action = "เพิ่ม"
             self.progress.emit(85, "กำลังบันทึกรายงาน import")
-            write_import_report(self.import_report_path, self.audit.import_report)
+            write_import_report(self.import_report_path, self.audit.import_report, self.path_manager)
             self.progress.emit(100, "นำเข้าคำเสร็จแล้ว")
             self.done.emit(count, action)
         except Exception:
@@ -140,9 +143,10 @@ class MainWindow(QMainWindow):
     def __init__(self, root: Path, repository: WordStore | None = None, extractor: WordExtractor | None = None, exporter: PdfExporter | None = None):
         super().__init__()
         self.root = root
-        self.config_path = root / "config.toml"
+        self.paths = PathManager(root)
+        self.config_path = self.paths.config_file()
         self.cfg = AppConfig.load(self.config_path)
-        self.repo = repository or WordRepository(self.cfg.resolve(self.cfg.database))
+        self.repo = repository or WordRepository(self.paths.resolve(self.cfg.database))
         self.extractor = extractor or TableWordSourceExtractor()
         self.exporter = exporter or ReportLabPdfExporter()
         self.setWindowTitle("MT Choose Words — สร้าง PDF คำศัพท์")
@@ -311,7 +315,7 @@ class MainWindow(QMainWindow):
 
     def _load_fonts(self):
         self.fonts.clear()
-        for path in sorted(self.cfg.resolve(self.cfg.fonts_dir).glob("*")):
+        for path in sorted(self.paths.resolve(self.cfg.fonts_dir).glob("*")):
             if path.suffix.lower() in {".ttf", ".otf", ".ttc"}:
                 self.fonts.addItem(path.name, str(path))
         if self.fonts.count() == 0:
@@ -325,23 +329,23 @@ class MainWindow(QMainWindow):
 
     def _selected_word_sources(self) -> Path | list[Path]:
         if self.cfg.word_source_files:
-            return [self.cfg.resolve(value) for value in self.cfg.word_source_files]
-        return self.cfg.resolve(self.cfg.words_dir)
+            return [self.paths.resolve(value) for value in self.cfg.word_source_files]
+        return self.paths.resolve(self.cfg.words_dir)
 
     def _review_registry_path(self) -> Path:
-        return self.root / "app/assets/words/reviewed_suspicions.json"
+        return self.paths.reviewed_suspicions_file()
 
     def _audit_report_path(self) -> Path:
-        return self.root / "app/doc/evidence/word_source_audit_report.json"
+        return self.paths.word_source_audit_report()
 
     def _import_report_path(self) -> Path:
-        return self.root / "app/doc/evidence/word_import_report.json"
+        return self.paths.word_import_report()
 
     def _choose_sources(self):
-        start = str(self.cfg.resolve(self.cfg.words_dir))
+        start = str(self.paths.resolve(self.cfg.words_dir))
         paths, _ = QFileDialog.getOpenFileNames(self, "เลือกไฟล์คำศัพท์", start, "Word/Text (*.docx *.txt)")
         if paths:
-            self.cfg.word_source_files = paths
+            self.cfg.word_source_files = [self.paths.to_config_value(path) for path in paths]
             self.source_files.setText(self._source_summary())
 
     def _refresh_word_status(self):
@@ -386,6 +390,7 @@ class MainWindow(QMainWindow):
             self._selected_word_sources(),
             self._review_registry_path(),
             self._audit_report_path(),
+            self.paths,
         )
         self.import_audit_worker.moveToThread(self.import_audit_thread)
         self.import_audit_thread.started.connect(self.import_audit_worker.run)
@@ -435,7 +440,7 @@ class MainWindow(QMainWindow):
         self.progress.setValue(0)
         self.status.showMessage("กำลังนำคำเข้า database...")
         self.word_import_thread = QThread()
-        self.word_import_worker = WordImportWorker(audit, self.repo, False, self._import_report_path())
+        self.word_import_worker = WordImportWorker(audit, self.repo, False, self._import_report_path(), self.paths)
         self.word_import_worker.moveToThread(self.word_import_thread)
         self.word_import_thread.started.connect(self.word_import_worker.run)
         self.word_import_worker.progress.connect(self._on_progress)
@@ -508,8 +513,8 @@ class MainWindow(QMainWindow):
         self.status.showMessage("บันทึกการตั้งค่าแล้ว")
 
     def _choose_output(self):
-        value = QFileDialog.getExistingDirectory(self, "เลือกโฟลเดอร์ผลลัพธ์", str(self.cfg.resolve(self.cfg.output_dir)))
-        if value: self.cfg.output_dir = value
+        value = QFileDialog.getExistingDirectory(self, "เลือกโฟลเดอร์ผลลัพธ์", str(self.paths.resolve(self.cfg.output_dir)))
+        if value: self.cfg.output_dir = self.paths.to_config_value(value)
 
     def _generate(self):
         if not self.fonts.currentData():
@@ -532,7 +537,7 @@ class MainWindow(QMainWindow):
         import random
         rng = random.Random(self.cfg.seed or None)
         documents = select_document_batches(self.repo, document_sets, pages_per_set, words_per_page, rng, selected_grades)
-        outputs = [self.cfg.resolve(self.cfg.output_dir) / build_pdf_filename(words_per_page, set_number=index)
+        outputs = [self.paths.resolve(self.cfg.output_dir) / build_pdf_filename(words_per_page, set_number=index)
                    for index in range(1, document_sets + 1)]
         self.generate.setEnabled(False); self.progress.setValue(0)
         self.status.showMessage("กำลังสร้าง PDF และจัดวางคำ กรุณารอสักครู่...")

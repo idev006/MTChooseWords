@@ -18,7 +18,7 @@ echo ==========================================
 echo          MT Choose Words
 echo ==========================================
 echo  [1] Run application
-echo  [2] Reload words from PDF
+echo  [2] Import words from DOCX/TXT
 echo  [3] Run automated tests
 echo  [4] Build Windows EXE
 echo  [5] Exit
@@ -46,7 +46,7 @@ goto menu
 
 :reload_words
 cls
-echo Reloading words from PDF...
+echo Importing words from DOCX/TXT...
 cd /d "%ROOT%"
 "%PYTHON%" scripts\reload_words.py
 if errorlevel 1 (

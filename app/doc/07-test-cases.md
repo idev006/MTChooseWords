@@ -20,13 +20,13 @@
 | TC-004 | Unit | ตรวจ adapter contracts | extractor/exporter/repository มี method ตาม contract |
 | TC-005 | Unit | จัดวางคำหลายคำ | ได้จำนวนคำตามต้องการ |
 | TC-006 | Unit | ตรวจ bounding boxes | ไม่มีคู่ใด intersect กัน |
-| TC-007 | Integration | อ่านตาราง PDF จริง | พบ 41 ตารางหน้า รวม 1,210 คำ |
-| TC-008 | Integration | ตรวจคำหน้าแรก | เริ่มด้วย กัน, กระบุง, กระจง, กระมัง |
-| TC-009 | Integration | ตรวจหน้าสุดท้าย | มีคำ 10 คำและไม่มี cell ว่างปะปนในชุดคำที่ได้ |
+| TC-007 | Unit | DOCX table-only extraction | อ่านเฉพาะ cell คำในตาราง |
+| TC-008 | Unit | Thai normalizer no-guess policy | ไม่เดาซ่อมคำสะกดจาก PDF mapping เก่า |
+| TC-009 | Unit | Unsupported PDF source | importer ไม่รับ `.pdf` เป็น source คำ |
 | TC-010 | Export | สร้าง PDF 2 หน้า | PDF มี 2 หน้าและมีขนาดไฟล์มากกว่า 0 |
 | TC-011 | Build | PyInstaller spec | สร้าง `dist/MTChooseWords.exe` สำเร็จ |
-| TC-012 | Regression | `ตาลึง` จาก PDF ที่ mapping ผิด | ได้ `ตำลึง` |
-| TC-013 | Regression | `กานัน` จาก PDF ที่ mapping ผิด | ได้ `กำนัน` |
+| TC-012 | Regression | Removed PDF repair dictionary | คำอย่าง `ตาลึง` และ `กานัน` ต้องไม่ถูกเดาแก้ |
+| TC-013 | Regression | Removed PDF/OCR dependencies | `requirements.txt` และ PyInstaller spec ไม่มี dependency ของ PDF/OCR reader |
 | TC-014 | Unit | DOCX มีข้อความนอกตารางและตารางคำ | อ่านเฉพาะ cell คำในตาราง |
 | TC-015 | Unit | คำเดียวกันอยู่คนละระดับชั้น | เก็บและกรองตามระดับชั้นได้ |
 | TC-016 | Unit | Source ไม่มีระดับชั้นในชื่อไฟล์ | Import ล้มเหลวแบบ fail-closed |
@@ -37,7 +37,7 @@
 | TC-021 | Unit | Long wrapped word cell | อ่านได้และ mark เป็น `long_cell_review` |
 | TC-022 | Unit | TXT source | อ่านหนึ่งคำต่อหนึ่งบรรทัด, trim คำ และใช้เลขบรรทัดเป็น source index |
 | TC-023 | Unit | Production adapter registry | รองรับ `.docx`/`.txt` และไม่รับ `.pdf` ใน production |
-| TC-024 | Unit | PDF diagnostic registry | ยังเปิด PDF adapter สำหรับ diagnosis เท่านั้น |
+| TC-024 | Unit | Removed PDF diagnostic registry | ไม่มี diagnostic registry สำหรับ PDF adapter |
 | TC-025 | Evidence | Source-folder journal | audit/reload ต้องสร้าง `mtchoosewords_import_journal.json` พร้อม grade key แบบ `ป.x` |
 | TC-026 | Regression | DOCX+TXT duplicate ในระดับเดียวกัน | นับ duplicate ข้าม source ด้วย key `ป.x + normalized word` |
 | TC-027 | Regression | Database key canonical | ฐานข้อมูลเก็บ `grade` เป็น `ป.1`-`ป.6` และ trim คำก่อนบันทึก |
@@ -48,13 +48,16 @@
 | TC-032 | Unit | Import worker from UI button | ปุ่ม “นำเข้ารายการคำ” ต้องเพิ่มคำโดยไม่ล้าง database |
 | TC-033 | Unit | Clear worker from UI button | ปุ่ม “ล้างข้อมูลคำในฐานข้อมูล” ต้องล้างอย่างเดียวและไม่ import คำ |
 | TC-034 | UI smoke | Import tab button labels | หน้าต่างจริงต้องมีปุ่ม “ล้างข้อมูลคำในฐานข้อมูล” และ “นำเข้ารายการคำ” โดยไม่มี checkbox ล้างก่อน Reload |
+| TC-035 | Unit | PathManager relative conversion | Path ใต้ project root ต้องถูกบันทึกเป็น relative และ path นอก root ต้องคงค่าไว้ |
+| TC-036 | Certification | Portable evidence/database paths | Config, journal, report และ SQLite `source_file` ต้องไม่มี absolute project path |
+| TC-037 | Unit | Removed local PDF/OCR reader | ไม่มี core reader, script หรือ evidence generator สำหรับอ่านคำจาก PDF/OCR |
 
 ## 3. Test result — 2026-07-26
 
 คำสั่ง:
 
 ```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m pytest -q
 ```
 
 ผลลัพธ์:
@@ -68,7 +71,7 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
 คำสั่ง build:
 
 ```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm mt_choose_words.spec
+.\.venv\Scripts\python.exe -m PyInstaller --noconfirm mt_choose_words.spec
 ```
 
 ผลลัพธ์: **ผ่าน** — สร้าง `dist/MTChooseWords.exe` สำเร็จ
@@ -78,13 +81,13 @@ F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --no
 คำสั่ง:
 
 ```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m pytest -q
 ```
 
 ผลลัพธ์:
 
 ```text
-51 passed
+54 passed
 ```
 
 Certification baseline:
@@ -101,7 +104,7 @@ Trim violations: 0
 คำสั่ง reload ที่ใช้ตรวจ config production:
 
 ```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\reload_words.py
+.\.venv\Scripts\python.exe scripts\reload_words.py
 ```
 
 ผลลัพธ์:
@@ -111,7 +114,54 @@ Reload complete (clear-all): 8705 unique words
 Source cells: 14374; duplicates removed: 5669
 ```
 
-## 5. Manual test cases ที่ยังต้องทำบน OS อื่น
+## 5. Test result — 2026-08-29
+
+คำสั่ง:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+ผลลัพธ์:
+
+```text
+49 passed in 23.66s
+```
+
+Certification baseline:
+
+```text
+DOCX/TXT production sources: 12 files
+Source cells/lines: 14,374
+Unique words after normalized key: 8,705
+Duplicate cells/lines removed: 5,669
+Committed SQLite rows: 8,705
+Absolute source paths: 0
+Trim violations: 0
+```
+
+คำสั่ง reload ที่ใช้ตรวจ config production:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\reload_words.py
+```
+
+ผลลัพธ์:
+
+```text
+Reload complete (clear-all): 8705 unique words
+Source cells: 14374; duplicates removed: 5669
+```
+
+คำสั่ง build:
+
+```powershell
+.\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
+```
+
+ผลลัพธ์: **ผ่าน** — สร้าง `dist/MTChooseWords.exe` สำเร็จ
+
+## 6. Manual test cases ที่ยังต้องทำบน OS อื่น
 
 - เปิด UI บน macOS และ Linux
 - เลือกฟอนท์ผ่าน dialog
@@ -120,7 +170,7 @@ Source cells: 14374; duplicates removed: 5669
 - เปิด PDF ด้วย viewer ของแต่ละ OS
 - ทดสอบ path ที่มี Unicode และ path ที่ไม่มีสิทธิ์เขียน
 
-## 6. Defect policy
+## 7. Defect policy
 
 - P0: คำหาย/คำผิด/คำซ้ำ/คำซ้อน — ห้าม release
 - P1: สร้าง PDF ไม่ได้หรือข้อมูล config หาย — ต้องแก้ก่อน release

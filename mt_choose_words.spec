@@ -1,13 +1,11 @@
 # Build with: .venv/Scripts/python.exe -m PyInstaller mt_choose_words.spec
 from pathlib import Path
-from PyInstaller.utils.hooks import collect_data_files
 root = Path(SPEC).resolve().parent
 datas = [
     (str(root / "config.toml"), "."),
     (str(root / "app" / "assets"), "app/assets"),
 ]
-datas += collect_data_files("pythainlp")
-hiddenimports = ["pdfplumber", "pdfminer", "pypdfium2", "pythainlp"]
+hiddenimports = []
 
 a = Analysis(
     [str(root / "app" / "__main__.py")],

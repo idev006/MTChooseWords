@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from app.core.contracts import WordEntry
+from app.core.paths import PathManager
 
 THAI_DIGITS = str.maketrans("๐๑๒๓๔๕๖๗๘๙", "0123456789")
 GRADE_RE = re.compile(r"(?:ป\.?|p)\s*([1-6๑-๖])", re.I)
@@ -112,7 +113,9 @@ def validate_word_entries(entries: list[WordEntry]) -> WordImportReport:
     )
 
 
-def write_import_report(path: Path, report: WordImportReport) -> None:
+def write_import_report(path: Path, report: WordImportReport, path_manager: PathManager | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = asdict(report)
+    if path_manager:
+        payload["source_files"] = [path_manager.display(source) for source in report.source_files]
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

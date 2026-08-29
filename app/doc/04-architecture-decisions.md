@@ -29,10 +29,10 @@
 - ผลกระทบ: บางกรณีพื้นที่ว่างอาจถูกใช้ได้ไม่เต็มประสิทธิภาพ
 - Next review: พิจารณา polygon/SAT เมื่อรองรับ 100+ คำต่อหน้า
 
-## ADR-005: ใช้ DOCX/TXT เป็น production word-bank source และปิด PDF import ชั่วคราว
+## ADR-005: ใช้ DOCX/TXT เป็น word-bank source และถอด PDF/OCR reader ออก
 
 - Status: Accepted
-- Decision: Reload production ใช้ adapter ที่รองรับเฉพาะ `.docx` และ `.txt`; PDF ถูกย้ายไปเป็น diagnostic-only
+- Decision: Reload production ใช้ adapter ที่รองรับเฉพาะ `.docx` และ `.txt`; โค้ดอ่านคำจาก PDF/OCR, diagnostic scripts, evidence OCR และ dependency เฉพาะทางถูกถอดออกจาก local scope
 - เหตุผล: `.docx` อ่าน table XML ได้โดยตรง ส่วน `.txt` visual-verified อ่านได้หนึ่งคำต่อบรรทัดและตรวจนับง่ายกว่า PDF/OCR ที่มีความเสี่ยงจาก text-layer mapping, timeout และ cell evidence ที่ต้องใช้คนตรวจ
-- ผลกระทบ: UI และ CLI จะเลือกหรือนำเข้าเฉพาะ DOCX/TXT เข้าฐานข้อมูล แต่ยังคงเครื่องมือวิเคราะห์ PDF สำหรับสร้างหลักฐานและวางแผน approval workflow ในอนาคต
+- ผลกระทบ: UI และ CLI จะเลือกหรือนำเข้าเฉพาะ DOCX/TXT เข้าฐานข้อมูล ส่วน PDF ยังเป็น output format สำหรับใบงานผ่าน ReportLab เท่านั้น
 - Evidence: `app/doc/evidence/word_import_report.json`

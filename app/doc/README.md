@@ -10,15 +10,9 @@
 - [บันทึกการตัดสินใจทางสถาปัตยกรรม](04-architecture-decisions.md)
 - [แผนการทดสอบและเกณฑ์ยอมรับ](05-test-plan.md)
 - [Test Cases และ Test Report](07-test-cases.md)
-- [กรณีสกัดภาษาไทยจาก PDF](08-thai-pdf-extraction.md)
 - [Content Import Pipeline](10-content-import-pipeline.md)
 - [Feature Recommendations](11-feature-recommendations.md)
 - [คู่มือการติดตั้งและใช้งาน](06-user-guide.md)
-- [PDF Source Probe Evidence](evidence/pdf_source_probe.md)
-- [PDF Source Diagnosis JSON](evidence/pdf_source_diagnosis.json)
-- [PDF OCR Cell Diagnosis JSON](evidence/pdf_ocr_cell_diagnosis.json)
-- [PDF OCR Folder Read Report](evidence/pdf_ocr_folder_read_report.json)
-- [PDF OCR Review Queue CSV](evidence/pdf_ocr_review_queue.csv)
 - [AI Word Review Evidence](evidence/ai_word_review_2026-08-26.md)
 - [บันทึกการเปลี่ยนแปลง](CHANGELOG.md)
 
@@ -33,4 +27,4 @@
 
 ## สถานะเอกสาร
 
-เอกสารนี้ครอบคลุม baseline ของ MVP, DOCX/TXT production import pipeline, import audit/preview gate, source-folder journal และ PDF OCR diagnostic review queue ณ วันที่ 2026-08-28
+เอกสารนี้ครอบคลุม baseline ของ MVP, DOCX/TXT production import pipeline, import audit/preview gate, source-folder journal, portable path policy และการถอดตัวอ่านคำจาก PDF/OCR ออกจาก local code ณ วันที่ 2026-08-29

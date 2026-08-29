@@ -25,7 +25,6 @@
 
 ## 4. Quality assurance
 
-- Visual QA for PDF source: render หน้า PDF เป็นภาพและแนบกับคำที่อ่านได้สำหรับตรวจคู่กัน
 - Import checksum: บันทึก hash ของ source file เพื่อรู้ว่าไฟล์เปลี่ยนหรือไม่
 - Regression fixtures: เก็บ source sample ที่ผ่านแล้วไว้ทดสอบ parser ทุกครั้ง
 - Build health page: หน้าสรุปสถานะ tests, import evidence และจำนวนคำต่อชั้น

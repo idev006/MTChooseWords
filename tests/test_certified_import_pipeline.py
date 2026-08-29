@@ -60,10 +60,29 @@ def test_committed_database_matches_certified_import_baseline():
             "select grade, normalized, text from words where normalized = ? order by grade",
             ("กา",),
         ).fetchall()
+        absolute_source_paths = connection.execute(
+            "select count(*) from words where source_file like 'F:%' or source_file like 'C:%' or source_file like '/%'"
+        ).fetchone()[0]
 
     assert schema[0][1:3] == ("grade", "VARCHAR(8)")
     assert total == 8705
     assert counts == EXPECTED_DATABASE_COUNTS
     assert trim_violations == 0
     assert duplicate_keys == 0
+    assert absolute_source_paths == 0
     assert sample == [("ป.1", "กา", "กา")]
+
+
+def test_committed_import_evidence_uses_portable_paths():
+    evidence_files = [
+        ROOT / "app/doc/evidence/word_import_report.json",
+        ROOT / "app/doc/evidence/word_source_audit_report.json",
+        LOT1 / "mtchoosewords_import_journal.json",
+        TEXT / "mtchoosewords_import_journal.json",
+    ]
+
+    for evidence in evidence_files:
+        text = evidence.read_text(encoding="utf-8")
+        assert str(ROOT) not in text
+        assert "F:\\" not in text
+        assert "C:\\" not in text

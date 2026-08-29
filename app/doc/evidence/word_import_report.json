@@ -11,17 +11,17 @@
   },
   "duplicate_cells": 5669,
   "source_files": [
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.1.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.2.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.4.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป2_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป4_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt"
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.1.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.2.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.3.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.4.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.5.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.6.docx",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป2_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป4_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt"
   ]
 }

@@ -9,7 +9,7 @@
 | `.docx` | Production path | ไฟล์ Word ต้องมีคำศัพท์อยู่ในตารางแบบคู่คอลัมน์ `ลำดับ/คำ` หรือ `คำที่/คำ` และชื่อไฟล์ต้องมีระดับชั้น ป.1-ป.6 |
 | `.txt` | Production path | ไฟล์ text UTF-8 ต้องมีหนึ่งคำต่อหนึ่งบรรทัด และชื่อไฟล์ต้องมีระดับชั้น ป.1-ป.6 เช่น `คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt` |
 
-PDF ถูกปิดจาก production import ชั่วคราว และใช้ได้เฉพาะ diagnostic/review command เพราะยังไม่มี approval workflow ที่รับประกันความถูกต้องได้พอสำหรับงานการศึกษา
+ไม่มีตัวอ่านคำจาก PDF/OCR ใน local code แล้ว เพราะยังไม่มี approval workflow ที่รับประกันความถูกต้องได้พอสำหรับงานการศึกษา
 
 ไฟล์ `.doc` ยังไม่ถูกอ่านโดยตรง หากต้องการใช้ต้องแปลงเป็น `.docx` ก่อน
 
@@ -35,7 +35,7 @@ Importer อ่านเฉพาะ cell ในตารางที่จั�
 - cell คำว่างหรือมี control character
 - คำยาวผิดปกติเกิน 120 ตัวอักษร
 - ระดับชั้นนอกช่วง ป.1-ป.6
-- เลือกเฉพาะ PDF หรือโฟลเดอร์ที่มีแต่ PDF สำหรับ production import
+- เลือกเฉพาะ PDF หรือโฟลเดอร์ที่ไม่มี `.docx`/`.txt` ที่รองรับ
 
 คำที่ยาวเกิน 40 ตัวอักษรยังอ่านได้ แต่ระบบจะจัดเป็น REVIEW เพื่อให้ AI/ทีมวิชาการตรวจรับก่อนใช้จริง เพราะอาจเป็นคำหรือวลีที่ Word แสดงหลายบรรทัดใน cell เดียว
 
@@ -44,7 +44,7 @@ Importer อ่านเฉพาะ cell ในตารางที่จั�
 ก่อน import production ให้รัน audit ก่อนเสมอ:
 
 ```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\audit_word_sources.py
+.\.venv\Scripts\python.exe scripts\audit_word_sources.py
 ```
 
 Audit report จะถูกสร้างที่:
@@ -63,7 +63,7 @@ Audit command ต้องคืน exit code ไม่ผ่านเมื่�
 
 ทั้ง UI และ command line ใช้ audit gate เดียวกันผ่าน `app/core/import_audit.py` ดังนั้น Reload จะถูกบล็อกก่อนเขียน database หากยังมีไฟล์สถานะ `FAIL` หรือ `REVIEW`
 
-โครงอ่าน source ใช้ adapter registry ใน `app/core/source_adapters.py` โดย production registry เปิดเฉพาะ DOCX/TXT และแยก diagnostic registry สำหรับ PDF/OCR เพื่อไม่กระทบ UI, database หรือ audit gate
+โครงอ่าน source ใช้ adapter registry ใน `app/core/source_adapters.py` โดย registry เปิดเฉพาะ DOCX/TXT เพื่อให้ test และการเพิ่ม parser ในอนาคตทำได้โดยไม่กระทบ UI, database หรือ audit gate
 
 ทุกครั้งที่ audit อ่าน source จะสร้าง journal ในโฟลเดอร์ source:
 
@@ -71,7 +71,7 @@ Audit command ต้องคืน exit code ไม่ผ่านเมื่�
 mtchoosewords_import_journal.json
 ```
 
-Journal ต้องมี source formats ที่ production รองรับ, diagnostic-only formats, inputs, source ที่อ่านจริง, summary, can_import, error และรายละเอียดรายไฟล์
+Journal ต้องมี source formats ที่ production รองรับ, inputs, source ที่อ่านจริง, summary, can_import, error และรายละเอียดรายไฟล์
 
 ทุกครั้งที่ reload ผ่าน UI หรือ command line ระบบสร้างรายงาน:
 
@@ -103,10 +103,9 @@ app/doc/evidence/word_import_report.json
 
 - `.docx`: ใช้เป็น production path เพราะอ่านจาก XML table โดยตรง
 - `.txt`: ใช้เป็น production path สำหรับชุดคำที่ visual verified แล้ว เพราะหนึ่งบรรทัดเท่ากับหนึ่งคำและตรวจนับง่าย
-- `.pdf`: diagnostic-only จนกว่าจะมี expected output ที่คนตรวจรับแล้วและ approval workflow ที่ตรวจย้อนหลังได้
 - AI หรือ OCR ไม่สามารถ overwrite คำศัพท์ production โดยไม่มี human review
 - คำที่ยาวจน Word แสดงหลายบรรทัดใน cell เดียวสามารถอ่านได้ แต่ audit จะ mark เป็น `long_cell_review` เพื่อให้ AI/คนตรวจซ้ำ
-- OCR-backed PDF extraction ต้องเทียบกับ expected list ที่ตรวจรับแล้วก่อน import production เพราะ OCR อาจอ่านเลขลำดับหรือคำบาง cell ผิดได้แม้ confidence สูง
+- หากจะนำ PDF/OCR reader กลับมาในอนาคต ต้องมี expected list ที่คนตรวจรับแล้ว, review queue ที่ใช้งานจริงได้ และ approval log ที่ตรวจย้อนหลังได้ก่อน
 
 ## 6. Database key and import modes
 
@@ -144,47 +143,6 @@ AI review evidence:
 app/doc/evidence/ai_word_review_2026-08-26.md
 ```
 
-## 7. Current PDF source status
+## 7. Removed PDF/OCR source reader
 
-PDF source folder `app/assets/words/pdf` has been probed and documented in:
-
-```text
-app/doc/evidence/pdf_source_probe.md
-```
-
-Production import does not load PDF sources. This specific PDF batch is not certified for 100% production import because some files expose corrupted text-layer output, OCR uncertainty, and timeout-review pages.
-
-ใช้คำสั่งนี้เมื่อต้องการวิเคราะห์ PDF แบบรายหน้าโดยไม่ import:
-
-```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_sources.py app\assets\words\pdf --start-page 1 --max-pages 12
-```
-
-หาก text layer เพี้ยน ให้ตรวจแบบ OCR ราย cell โดยระบุหน้า:
-
-```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\diagnose_pdf_ocr_cells.py "app\assets\words\pdf\_บัญชีคำพื้นฐาน ป๖ (สมบูรณ์).pdf" --page 10 --expected-count 15
-```
-
-เมื่อต้องการสั่งอ่าน PDF ทั้งโฟลเดอร์ในโหมดตรวจสอบโดยไม่ import:
-
-```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe scripts\read_pdf_ocr_folder.py app\assets\words\pdf --start-page 10 --max-pages-per-file 1 --max-cells-per-page 80 --page-timeout-seconds 45
-```
-
-ผลลัพธ์จะถูกบันทึกที่:
-
-```text
-app/doc/evidence/pdf_ocr_folder_read_report.json
-app/doc/evidence/pdf_ocr_review_queue.csv
-app/doc/evidence/pdf_ocr_cells
-```
-
-`word_candidate_count` คือจำนวนคำที่ OCR อ่านออกมา ส่วน `review_queue_count` คือจำนวนรายการที่ต้องตรวจรวมทั้งคำที่สงสัยและหน้าที่ timeout/error
-
-Diagnostic status:
-
-- PASS: ตัวอย่างหน้าที่ตรวจอ่านคำได้และไม่พบอักขระน่าสงสัย
-- REVIEW: อ่านได้บางส่วนแต่พบ text-layer น่าสงสัย เช่นอักขระลาวหรืออักขระไทยที่มักเกิดจาก font mapping ผิด
-- NO_WORDS_IN_SAMPLE: ช่วงหน้าที่ตรวจยังไม่เจอตารางคำศัพท์ อาจเป็นคำนำ/สารบัญหรือเลือกช่วงหน้ายังไม่ถูก
-- FAIL: เกิด error ระหว่างตรวจ PDF
+โค้ดอ่านคำจาก PDF/OCR ถูกถอดออกจาก local scope แล้ว ได้แก่ core reader, diagnostic scripts, OCR evidence และ dependency เฉพาะทาง การนำเข้าคำจึงเหลือเฉพาะ `.docx` และ `.txt` เท่านั้น ส่วน PDF ยังใช้เป็นไฟล์ผลลัพธ์ของใบงาน

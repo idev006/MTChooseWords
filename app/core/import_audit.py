@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 from app.core.contracts import WordEntry
+from app.core.paths import PathManager
 from app.core.review_registry import load_reviewed_suspicions
 from app.core.source_adapters import SourceAdapterRegistry, default_source_registry
 from app.core.source_contract import WordImportReport, collect_word_suspicions, grade_key, validate_word_entries
@@ -65,15 +66,27 @@ def _journal_folders(paths: list[Path]) -> list[Path]:
     return sorted(folders)
 
 
-def _suspicion_payload(item) -> dict:
+def _source_value(path: str | Path, path_manager: PathManager | None) -> str:
+    return path_manager.display(path) if path_manager else str(path)
+
+
+def _portable_entry(entry: WordEntry, path_manager: PathManager | None) -> WordEntry:
+    if not path_manager:
+        return entry
+    return WordEntry(entry.text, path_manager.display(entry.source_file), entry.grade, entry.source_index)
+
+
+def _suspicion_payload(item, path_manager: PathManager | None = None) -> dict:
     payload = asdict(item)
     payload["grade"] = grade_key(item.grade)
     payload["text"] = " ".join(str(item.text).split())
+    payload["source_file"] = _source_value(item.source_file, path_manager)
     return payload
 
 
-def _file_payload(item: SourceAuditFile) -> dict:
+def _file_payload(item: SourceAuditFile, path_manager: PathManager | None = None) -> dict:
     payload = asdict(item)
+    payload["source_file"] = _source_value(item.source_file, path_manager)
     payload["suspicions"] = list(item.suspicions)
     payload["unresolved_suspicions"] = list(item.unresolved_suspicions)
     return payload
@@ -84,15 +97,16 @@ def _write_source_journals(
     input_paths: list[Path],
     supported_sources: list[Path],
     result: SourceAuditResult | None,
+    path_manager: PathManager | None = None,
     error: str | None = None,
 ) -> None:
-    supported_names = {str(path) for path in supported_sources}
-    files_payload = [_file_payload(item) for item in result.files] if result else []
+    supported_names = {_source_value(path, path_manager) for path in supported_sources}
+    files_payload = [_file_payload(item, path_manager) for item in result.files] if result else []
     payload = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "production_source_formats": [".docx", ".txt"],
-        "diagnostic_only_formats": [".pdf"],
-        "inputs": [str(path) for path in input_paths],
+        "diagnostic_only_formats": [],
+        "inputs": [_source_value(path, path_manager) for path in input_paths],
         "supported_sources": sorted(supported_names),
         "summary": asdict(result.summary) if result else None,
         "can_import": result.can_import if result else False,
@@ -112,14 +126,15 @@ def audit_word_sources(
     review_registry_path: Path | None = None,
     registry: SourceAdapterRegistry | None = None,
     progress: AuditProgress | None = None,
+    path_manager: PathManager | None = None,
 ) -> SourceAuditResult:
     source_registry = registry or default_source_registry()
     requested_paths = _input_paths(source)
     journal_folders = _journal_folders(requested_paths)
     sources = source_registry.sources_from(source)
     if not sources:
-        message = "ไม่พบไฟล์ .docx หรือ .txt ใน source ที่เลือก; PDF ถูกปิดสำหรับ production import ชั่วคราว"
-        _write_source_journals(journal_folders, requested_paths, sources, None, error=message)
+        message = "ไม่พบไฟล์ .docx หรือ .txt ใน source ที่เลือก"
+        _write_source_journals(journal_folders, requested_paths, sources, None, path_manager, error=message)
         raise ValueError(message)
 
     reviewed = load_reviewed_suspicions(review_registry_path) if review_registry_path else set()
@@ -136,7 +151,7 @@ def audit_word_sources(
                     overall_done = (index - 1) + file_fraction
                     progress(int(overall_done * 100), len(sources) * 100, message)
 
-            rows = source_registry.extract(source_path, progress=source_progress)
+            rows = [_portable_entry(row, path_manager) for row in source_registry.extract(source_path, progress=source_progress)]
             report = validate_word_entries(rows)
             suspicions = collect_word_suspicions(rows)
             unresolved = [
@@ -144,16 +159,16 @@ def audit_word_sources(
                 if (item.grade, item.text.casefold(), item.reason) not in reviewed
             ]
             files.append(SourceAuditFile(
-                source_file=str(source_path),
+                source_file=_source_value(source_path, path_manager),
                 status="REVIEW" if unresolved else "PASS",
                 total_cells=report.total_cells,
                 unique_words=report.unique_words,
-                suspicions=[_suspicion_payload(item) for item in suspicions],
-                unresolved_suspicions=[_suspicion_payload(item) for item in unresolved],
+                suspicions=[_suspicion_payload(item, path_manager) for item in suspicions],
+                unresolved_suspicions=[_suspicion_payload(item, path_manager) for item in unresolved],
             ))
             all_rows.extend(rows)
         except Exception as exc:
-            files.append(SourceAuditFile(source_file=str(source_path), status="FAIL", error=str(exc)))
+            files.append(SourceAuditFile(source_file=_source_value(source_path, path_manager), status="FAIL", error=str(exc)))
         if progress:
             progress(index, len(sources), f"ตรวจแล้ว {source_path.name}")
 
@@ -166,11 +181,11 @@ def audit_word_sources(
         unique_words=import_report.unique_words if import_report else 0,
     )
     result = SourceAuditResult(len(sources), summary, files, all_rows, import_report)
-    _write_source_journals(journal_folders, requested_paths, sources, result)
+    _write_source_journals(journal_folders, requested_paths, sources, result, path_manager)
     return result
 
 
-def write_audit_report(path: Path, result: SourceAuditResult) -> None:
+def write_audit_report(path: Path, result: SourceAuditResult, path_manager: PathManager | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "source_count": result.source_count,
@@ -181,6 +196,6 @@ def write_audit_report(path: Path, result: SourceAuditResult) -> None:
             "total_cells": result.summary.total_cells,
             "unique_words": result.summary.unique_words,
         },
-        "files": [_file_payload(item) for item in result.files],
+        "files": [_file_payload(item, path_manager) for item in result.files],
     }
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

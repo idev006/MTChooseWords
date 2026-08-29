@@ -1,29 +1,27 @@
 {
-  "timestamp_utc": "2026-08-28T11:59:04.496321+00:00",
+  "timestamp_utc": "2026-08-29T00:31:37.760302+00:00",
   "production_source_formats": [
     ".docx",
     ".txt"
   ],
-  "diagnostic_only_formats": [
-    ".pdf"
-  ],
+  "diagnostic_only_formats": [],
   "inputs": [
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text"
+    "app/assets/words/lot1",
+    "app/assets/words/text"
   ],
   "supported_sources": [
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.1.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.2.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.4.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป2_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป4_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
-    "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt"
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.1.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.2.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.3.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.4.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.5.docx",
+    "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.6.docx",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป2_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป4_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
+    "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt"
   ],
   "summary": {
     "pass_count": 12,
@@ -36,7 +34,7 @@
   "error": null,
   "files": [
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.1.docx",
+      "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.1.docx",
       "status": "PASS",
       "error": null,
       "total_cells": 708,
@@ -45,7 +43,7 @@
         {
           "grade": "ป.1",
           "text": "ชิ้น",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.1.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.1.docx",
           "source_index": 179,
           "reason": "duplicate_in_same_grade"
         }
@@ -53,7 +51,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.2.docx",
+      "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.2.docx",
       "status": "PASS",
       "error": null,
       "total_cells": 1098,
@@ -62,7 +60,7 @@
         {
           "grade": "ป.2",
           "text": "สด",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.2.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.2.docx",
           "source_index": 315,
           "reason": "duplicate_in_same_grade"
         }
@@ -70,7 +68,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+      "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.3.docx",
       "status": "PASS",
       "error": null,
       "total_cells": 1206,
@@ -79,21 +77,21 @@
         {
           "grade": "ป.3",
           "text": "รู้อะไรไม่สู้รู้วิชา รู้รักษาตัวรอดเป็นยอดดี",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.3.docx",
           "source_index": 811,
           "reason": "long_cell_review"
         },
         {
           "grade": "ป.3",
           "text": "หลง",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.3.docx",
           "source_index": 1055,
           "reason": "duplicate_in_same_grade"
         },
         {
           "grade": "ป.3",
           "text": "โอ้เอ้วิหารราย",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.3.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.3.docx",
           "source_index": 1206,
           "reason": "duplicate_in_same_grade"
         }
@@ -101,7 +99,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.4.docx",
+      "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.4.docx",
       "status": "PASS",
       "error": null,
       "total_cells": 1270,
@@ -110,7 +108,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+      "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.5.docx",
       "status": "PASS",
       "error": null,
       "total_cells": 1048,
@@ -119,21 +117,21 @@
         {
           "grade": "ป.5",
           "text": "โฉมตรู",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.5.docx",
           "source_index": 223,
           "reason": "duplicate_in_same_grade"
         },
         {
           "grade": "ป.5",
           "text": "สมเด็จพระเทพรัตนราชสุดาฯ สยามบรมราชกุมารี",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.5.docx",
           "source_index": 816,
           "reason": "long_cell_review"
         },
         {
           "grade": "ป.5",
           "text": "ประวัติศาสตร์",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.5.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.5.docx",
           "source_index": 1028,
           "reason": "duplicate_in_same_grade"
         }
@@ -141,7 +139,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+      "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.6.docx",
       "status": "PASS",
       "error": null,
       "total_cells": 852,
@@ -150,28 +148,28 @@
         {
           "grade": "ป.6",
           "text": "คนที่ไม่มีจุดมุ่งหมายใดในชีวิต เปรียบเสมือนเรือไม่มีหางเสือ",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.6.docx",
           "source_index": 83,
           "reason": "long_cell_review"
         },
         {
           "grade": "ป.6",
           "text": "นมัสการ",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.6.docx",
           "source_index": 263,
           "reason": "duplicate_in_same_grade"
         },
         {
           "grade": "ป.6",
           "text": "นักขัตฤกษ์",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.6.docx",
           "source_index": 264,
           "reason": "duplicate_in_same_grade"
         },
         {
           "grade": "ป.6",
           "text": "เศียร",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\lot1\\บัญชีคำพื้นฐาน ป.6.docx",
+          "source_file": "app/assets/words/lot1/บัญชีคำพื้นฐาน ป.6.docx",
           "source_index": 640,
           "reason": "duplicate_in_same_grade"
         }
@@ -179,7 +177,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
+      "source_file": "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป1_VISUAL_VERIFIED.txt",
       "status": "PASS",
       "error": null,
       "total_cells": 1229,
@@ -188,7 +186,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป2_VISUAL_VERIFIED.txt",
+      "source_file": "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป2_VISUAL_VERIFIED.txt",
       "status": "PASS",
       "error": null,
       "total_cells": 1445,
@@ -197,7 +195,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt",
+      "source_file": "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป3_VISUAL_VERIFIED.txt",
       "status": "PASS",
       "error": null,
       "total_cells": 1473,
@@ -206,7 +204,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป4_VISUAL_VERIFIED.txt",
+      "source_file": "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป4_VISUAL_VERIFIED.txt",
       "status": "PASS",
       "error": null,
       "total_cells": 1422,
@@ -215,7 +213,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
+      "source_file": "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
       "status": "PASS",
       "error": null,
       "total_cells": 1472,
@@ -224,7 +222,7 @@
         {
           "grade": "ป.5",
           "text": "สมเด็จพระเทพรัตนราชสุดาฯ สยามบรมราชกุมารี",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
+          "source_file": "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป5_VISUAL_VERIFIED.txt",
           "source_index": 1472,
           "reason": "long_cell_review"
         }
@@ -232,7 +230,7 @@
       "unresolved_suspicions": []
     },
     {
-      "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt",
+      "source_file": "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt",
       "status": "PASS",
       "error": null,
       "total_cells": 1151,
@@ -241,7 +239,7 @@
         {
           "grade": "ป.6",
           "text": "คนที่ไม่มีจุดมุ่งหมายใดในชีวิต เปรียบเสมือนเรือไม่มีหางเสือ",
-          "source_file": "F:\\programming\\python\\MTChooseWords\\app\\assets\\words\\text\\คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt",
+          "source_file": "app/assets/words/text/คลังคำศัพท์ภาษาไทย_ป6_VISUAL_VERIFIED.txt",
           "source_index": 788,
           "reason": "long_cell_review"
         }

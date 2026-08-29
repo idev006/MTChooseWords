@@ -9,7 +9,6 @@ PySide6 UI
     ↓
 Application Services
     ├── Table Word Source Extractor
-    ├── PDF Diagnostic Extractor
     ├── DOCX Table Extractor
     ├── TXT Line Extractor
     ├── Source Contract Validator
@@ -30,10 +29,9 @@ Assets
 | โมดูล | หน้าที่ |
 |---|---|
 | `app/ui/main_window.py` | UI แบบ 2 tab สำหรับนำเข้าข้อมูลและสร้างใบงาน, validation, ปุ่มล้างข้อมูล/นำเข้าที่แยกกัน, progress และ worker thread |
-| `app/core/extractor.py` | ตรวจเส้นตาราง, อ่านเฉพาะ word cells, แก้ลำดับ Unicode ภาษาไทย และตรวจครบทุกหน้า |
 | `app/core/docx_extractor.py` | อ่านเฉพาะ cell ในตารางของไฟล์ Word `.docx` และผูกคำกับระดับชั้นจากชื่อไฟล์ |
 | `app/core/text_extractor.py` | อ่านไฟล์ `.txt` แบบหนึ่งคำต่อหนึ่งบรรทัดและผูกคำกับระดับชั้นจากชื่อไฟล์ |
-| `app/core/source_adapters.py` | registry ของ source adapters โดย production registry เปิด DOCX/TXT และแยก diagnostic registry สำหรับ PDF |
+| `app/core/source_adapters.py` | registry ของ source adapters โดยเปิดเฉพาะ DOCX/TXT สำหรับการนำเข้าคำ |
 | `app/core/word_source_extractor.py` | เลือก adapter production ตามนามสกุลไฟล์และรวม source `.docx`/`.txt` |
 | `app/core/source_contract.py` | ตรวจ source contract, ระดับชั้น, cell คำ และสร้าง import report |
 | `app/core/import_audit.py` | รวม audit gate สำหรับ UI/command line, สร้าง preview decision และบล็อก REVIEW/FAIL ก่อนเขียนฐานข้อมูล |
@@ -41,6 +39,7 @@ Assets
 | `app/db/models.py` | SQLAlchemy model ของคำศัพท์ |
 | `app/db/database.py` | สร้างฐานข้อมูลและ query คำแบบสุ่ม |
 | `app/core/config.py` | โหลด/บันทึก TOML configuration |
+| `app/core/paths.py` | จัดการ application root, resolve relative paths และแปลง path ใต้ project root กลับเป็น relative path สำหรับ config/evidence |
 | `alembic/` | Database migration |
 
 ## 3. กติกาการจัดวาง
@@ -76,7 +75,7 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 
 - แหล่งข้อมูลหลักใหม่อยู่ที่ `app/assets/words/lot1`
 - แหล่งข้อมูล text verified อยู่ที่ `app/assets/words/text`
-- อ่านเฉพาะไฟล์ `.docx` และ `.txt`; ไฟล์ `.doc` และ `.pdf` ในโฟลเดอร์เดียวกันถูกข้ามใน production import
+- อ่านเฉพาะไฟล์ `.docx` และ `.txt`; ไฟล์ `.doc` และ `.pdf` ในโฟลเดอร์เดียวกันถูกข้าม
 - อ่านเฉพาะข้อความใน table cell ที่จับคู่เลขลำดับกับคำศัพท์ได้
 - สำหรับ `.txt` อ่านหนึ่งคำต่อหนึ่งบรรทัด และใช้เลขบรรทัดเป็น source index
 - ไม่อ่านข้อความหัวเรื่อง ย่อหน้า หรือคำบรรยายนอกตาราง
@@ -88,18 +87,11 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 - ทุกครั้งที่ audit อ่าน source จะสร้าง `mtchoosewords_import_journal.json` ในโฟลเดอร์ที่อ่าน เพื่อบันทึก source, summary, PASS/REVIEW/FAIL และ error
 - UI รองรับการเลือกไฟล์ source เฉพาะชุด, ปุ่มล้างข้อมูลคำในฐานข้อมูลที่แยกจากปุ่มนำเข้ารายการคำ และแสดง preview ก่อนยืนยันนำเข้า
 
-### PDF diagnostic-only contract
+### Removed PDF/OCR word reader
 
-- PDF ถูกปิดจาก production import ชั่วคราว เพราะยังเชื่อถือไม่ได้พอสำหรับข้อมูลการศึกษา
-- เครื่องมือ PDF ใช้เพื่อวิเคราะห์, สร้าง review queue และเก็บหลักฐานเท่านั้น
-- แหล่งข้อมูล diagnostic ต้องเป็น PDF ที่มี vector table และ text layer
-- ชื่อไฟล์ PDF ต้องมีระดับชั้น ป.1-ป.6 หรือ P1-P6
-- ใช้ `pdfplumber.find_tables()` ตรวจหา table geometry จากเส้นจริงของ PDF
-- อ่าน `page.chars` เฉพาะกรอบ cell ที่เป็นคอลัมน์คำด้านซ้ายและด้านขวา
-- Parser อ่านจากคู่ cell `เลขลำดับ/คำ` เป็นหลัก และใช้ fallback สำหรับ PDF legacy ที่มี geometry เก่า
-- จัดอักขระตามตำแหน่ง glyph และส่งผ่าน Thai Unicode normalizer
-- ช่องว่างท้ายตารางยอมรับได้สำหรับหน้าสุดท้าย แต่ห้ามมี PDF table page ที่อ่านคำไม่ได้ทั้งหมด
-- `reload_words.py` ไม่โหลด PDF เข้าฐานข้อมูล จนกว่าจะมี human-reviewed expected output และ approval workflow ที่ตรวจรับได้ครบถ้วน
+- ไม่มี production หรือ diagnostic adapter สำหรับอ่านคำจาก PDF/OCR ใน local code
+- ไม่มี dependency เฉพาะทางของ PDF/OCR reader เช่น `pdfplumber`, `pymupdf`, `pytesseract`, `pythainlp`
+- PDF ยังเป็น output format สำหรับสร้างใบงานผ่าน `app/core/pdf_generator.py`
 
 ## 7. Source code maintainability rule
 
@@ -109,19 +101,25 @@ PDF ใช้ point ส่วนระยะห่าง Title รับเป�
 
 - `pyproject.toml` กำหนด `pytest` test path และ project root
 - `app/__main__.py` เป็น package entry point สำหรับ `python -m app`
-- `app/core/paths.py` แยก source-mode กับ PyInstaller frozen-mode
+- `app/core/paths.py` แยก source-mode กับ PyInstaller frozen-mode และเป็น path manager กลางสำหรับ config, source, database, output และ evidence
 - `mt_choose_words.spec` รวม `config.toml`, assets และ fonts ลง executable
 - build command: `.venv/Scripts/python.exe -m PyInstaller mt_choose_words.spec`
 
-## 9. Thai dictionary validation
+## 8.1 Portable path policy
 
-`app/core/thai_normalizer.py` ใช้ Thai dictionary จาก `pythainlp` เป็นหลักฐานประกอบการซ่อม Unicode ที่ PDF mapping ผิด โดยจะเปลี่ยน `า` เป็น `ำ` เฉพาะเมื่อได้ candidate ที่เป็นคำใน dictionary เพียงคำเดียว หากไม่ชัดเจนจะคงค่าเดิมและไม่เดาสุ่ม
+- ค่าที่บันทึกใน `config.toml`, import journal, audit report, import report และ SQLite `source_file` ต้องเป็น relative path เมื่ออยู่ภายใน project/application root
+- โค้ด application และ scripts ต้อง resolve path ผ่าน `PathManager` แทนการอิง current working directory
+- Absolute path ใช้ได้เฉพาะกรณีผู้ใช้เลือก path ภายนอก project root เช่น output folder นอกโฟลเดอร์โปรแกรม
+
+## 9. Thai text normalization
+
+`app/core/thai_normalizer.py` ทำ normalization แบบไม่เดาคำ โดย trim ขอบคำ, normalize Unicode เป็น NFC และซ่อมลำดับ `นิคหิต + า` ให้เป็น `ำ` เฉพาะกรณีที่ source เก็บ glyph แบบแยกตัวอักษร ไม่ใช้ dictionary เพื่อเดาสะกดคำ
 
 ## 10. Content import accuracy gate
 
 Pipeline ห้าม import ข้อมูลที่ไม่ผ่าน source contract หากตรวจพบ source ผิดรูปแบบ ต้องหยุดและแจ้งปัญหาแทนการเก็บคำที่อาจผิดลงฐานข้อมูล
 
-DOCX และ TXT เป็น production path สำหรับความถูกต้องของคำ เพราะอ่านจากโครงสร้างที่ตรวจรับได้โดยตรง ส่วน PDF ถูกจำกัดเป็น diagnostic-only เพื่อป้องกันคำผิดเข้าสู่ฐานข้อมูล
+DOCX และ TXT เป็น production path สำหรับความถูกต้องของคำ เพราะอ่านจากโครงสร้างที่ตรวจรับได้โดยตรง ส่วน PDF/OCR reader ถูกถอดออกเพื่อป้องกันคำที่ยังไม่น่าเชื่อถือเข้าสู่ฐานข้อมูล
 
 UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต่แสดงจำนวนคำในคลังปัจจุบันแทน การเขียนฐานข้อมูลจะเกิดเฉพาะเมื่อผู้ใช้กด “นำเข้ารายการคำ” และยืนยัน preview หลัง audit ผ่านแล้ว
 
@@ -130,5 +128,3 @@ UI ไม่ทำ auto-reload ตอนเปิดโปรแกรม แต
 หน้าจอหลักแยก workflow เป็น tab `นำเข้าข้อมูล` สำหรับ source/audit/reload และ tab `สร้างใบงาน` สำหรับ grade filter, layout settings และ export PDF เพื่อลดความสับสนและลดโอกาสกดผิดขั้นตอน
 
 งานที่ใช้เวลานานต้องทำผ่าน worker thread ได้แก่ audit/import คำศัพท์, clear database และ export PDF เพื่อให้หน้าจอยังตอบสนองระหว่างประมวลผล ผู้ใช้จะเห็น progress bar และข้อความสถานะของขั้นตอนปัจจุบัน
-
-PDF diagnostic command รายงาน progress ได้ระดับหน้าไฟล์ และใช้สำหรับ QA เพื่อดูว่าแต่ละหน้ามี table geometry หรืออ่านข้อความ cell ได้ผิดปกติหรือไม่ โดยไม่ import เข้าฐานข้อมูล

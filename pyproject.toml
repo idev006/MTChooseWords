@@ -13,7 +13,7 @@ testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra"
 markers = [
-  "integration: reads real PDF/assets and exercises the full extraction boundary",
+  "integration: reads real project assets and exercises the full extraction boundary",
 ]
 
 [tool.setuptools.packages.find]

@@ -24,7 +24,7 @@ class TableWordSourceExtractor:
         rows: list[WordEntry] = []
         sources = self.sources_from(source)
         if not sources:
-            raise ValueError("ไม่พบไฟล์ .docx หรือ .txt ใน source ที่เลือก; PDF ถูกปิดสำหรับ production import ชั่วคราว")
+            raise ValueError("ไม่พบไฟล์ .docx หรือ .txt ใน source ที่เลือก")
 
         for path in sources:
             rows.extend(self.registry.extract(path))

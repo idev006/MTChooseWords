@@ -90,9 +90,9 @@ def test_import_report_counts_duplicate_cells():
     assert report.counts_by_grade == {"ป.1": 2, "ป.2": 1}
 
 
-def test_source_contract_rejects_corrupt_pdf_text_layer_characters():
+def test_source_contract_rejects_unexpected_source_characters():
     try:
-        validate_word_entries([WordEntry("ฟาງ", "p3.pdf", 3, 1)])
+        validate_word_entries([WordEntry("ฟาງ", "p3.docx", 3, 1)])
     except ValueError as exc:
         assert "อักขระผิดปกติ" in str(exc)
     else:
@@ -170,6 +170,6 @@ def test_import_audit_rejects_pdf_only_sources(tmp_path):
     try:
         audit_word_sources(pdf)
     except ValueError as exc:
-        assert "PDF ถูกปิด" in str(exc)
+        assert ".docx หรือ .txt" in str(exc)
     else:
         raise AssertionError("PDF-only production import should fail closed")

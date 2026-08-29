@@ -5,7 +5,7 @@
 | Test | กรณีทดสอบ | ผลที่คาดหวัง |
 |---|---|---|
 | T-01 | Production import DOCX/TXT | ได้คำจาก `.docx`/`.txt` และบันทึก SQLite สำเร็จ |
-| T-01A | ตรวจ table cells | PDF ปัจจุบันได้ 41 ตารางหน้าและ 1,210 เซลล์คำ |
+| T-01A | ตรวจ DOCX table cells | อ่านเฉพาะ cell คำในตารางและไม่อ่านข้อความนอกตาราง |
 | T-01B | Reload ซ้ำ | คลังคำเดิมถูกล้างก่อน import และจำนวนไม่เพิ่มซ้ำ |
 | T-01C | สกัด DOCX เฉพาะตาราง | ข้อความนอกตารางไม่ถูก import และ cell คำในตารางถูกอ่านพร้อมระดับชั้น |
 | T-01D | เลือกระดับชั้น | count และ random words ใช้เฉพาะระดับชั้นที่เลือก |
@@ -17,21 +17,21 @@
 | T-01J | Import preview | UI ต้องแสดง preview และต้องได้รับการยืนยันก่อนเขียน database |
 | T-01K | Non-blocking import UI | การ audit/reload ต้องทำใน worker thread และรายงาน progress/status ให้ผู้ใช้เห็น |
 | T-01L | Pluggable source adapters | Table source extractor ต้องรับ adapter registry ที่ inject ได้เพื่อให้ทดสอบ/เพิ่ม parser ใหม่ได้ง่าย |
-| T-01M | PDF OCR coverage | หน้า PDF ที่มี expected count ต้องรายงาน coverage และส่งคำที่สงสัยเข้า REVIEW พร้อม evidence |
-| T-01N | PDF production disabled | default importer และ UI/CLI reload ต้องไม่รับ PDF เข้า database |
+| T-01M | PDF reader removed | ไม่มี adapter, script หรือ dependency สำหรับอ่านคำจาก PDF/OCR ใน local code |
+| T-01N | Unsupported PDF source | default importer และ UI/CLI reload ต้องไม่รับ PDF เข้า database |
 | T-01O | TXT source import | อ่าน `.txt` แบบหนึ่งคำต่อบรรทัด ระดับชั้นจากชื่อไฟล์ และใช้เลขบรรทัดเป็น source index |
 | T-01P | Import journal | audit/reload ต้องสร้าง `mtchoosewords_import_journal.json` ในโฟลเดอร์ source ทุกครั้ง |
 | T-01Q | Canonical grade-word key | ฐานข้อมูลต้องเก็บระดับชั้นเป็น `ป.1`-`ป.6`, trim คำก่อนบันทึก และกันซ้ำด้วย `ป.x + normalized word` |
 | T-01R | Combined source duplicate audit | เมื่อ audit DOCX+TXT พร้อมกัน ต้องนับ duplicate ข้าม source ในระดับเดียวกันได้ถูกต้อง |
 | T-01S | Separate clear/import buttons | UI ต้องแยกปุ่มล้างข้อมูลคำออกจากปุ่มนำเข้ารายการคำ และ worker ของแต่ละปุ่มต้องไม่ทำงานปนกัน |
-| T-02 | PDF ไม่มี text layer | แจ้งปัญหา ไม่สร้างผลลัพธ์ผิดพลาดเงียบ ๆ |
-| T-03 | ขอคำมากกว่าคลัง | แจ้งเตือนและไม่สร้าง PDF |
-| T-04 | หลายหน้า | คำไม่ซ้ำกันข้ามทุกหน้า |
-| T-05 | เปลี่ยน orientation | ได้ A4 portrait/landscape ถูกต้อง |
-| T-06 | ตั้ง font range | ทุกคำอยู่ภายใน minimum/maximum |
-| T-07 | หมุนคำ | องศาอยู่ในช่วงที่กำหนด |
-| T-08 | Title | อยู่กึ่งกลางด้านบนและไม่ถูกคำทับ |
-| T-09 | บันทึก config | ปิด/เปิดโปรแกรมแล้วค่ากลับมาเหมือนเดิม |
+| T-01T | Portable path manager | Config, reports, journals และ database source_file ต้องใช้ relative path เมื่ออยู่ใต้ project root |
+| T-02 | ขอคำมากกว่าคลัง | แจ้งเตือนและไม่สร้าง PDF |
+| T-03 | หลายหน้า | คำไม่ซ้ำกันข้ามทุกหน้า |
+| T-04 | เปลี่ยน orientation | ได้ A4 portrait/landscape ถูกต้อง |
+| T-05 | ตั้ง font range | ทุกคำอยู่ภายใน minimum/maximum |
+| T-06 | หมุนคำ | องศาอยู่ในช่วงที่กำหนด |
+| T-07 | Title | อยู่กึ่งกลางด้านบนและไม่ถูกคำทับ |
+| T-08 | บันทึก config | ปิด/เปิดโปรแกรมแล้วค่ากลับมาเหมือนเดิม |
 
 ## 2. Property Checks
 
@@ -50,7 +50,8 @@
 - UI และ command line ต้องใช้ audit gate เดียวกันก่อนเขียนฐานข้อมูล
 - งาน audit/import/clear ใน UI ต้องไม่ทำบน main thread
 - Source extractor ต้องไม่ hard-code parser จนทดสอบด้วย adapter จำลองไม่ได้
-- PDF OCR diagnostic ต้องไม่ถือว่า confidence สูงเพียงอย่างเดียวเป็น production approval
+- ไม่เหลือ dependency หรือ adapter สำหรับอ่านคำจาก PDF/OCR
+- ไม่มี absolute project path เช่น `F:\...` หรือ `C:\...` ใน config/evidence/database ที่นำขึ้น git
 
 ## 3. Cross-platform Matrix
 
@@ -75,8 +76,8 @@
 ## 6. Automated test/build commands
 
 ```powershell
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m pytest -q
-F:\programming\python\MTChooseWords\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean mt_choose_words.spec
 ```
 
-Baseline ล่าสุด: pytest ผ่าน 51 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, committed SQLite database มี 8,705 คำและไม่มี trim violation, PDF ถูกปิดจาก production import แต่ยังใช้ diagnostic ได้
+Baseline ล่าสุด: pytest ผ่าน 49 tests, audit DOCX+TXT ผ่าน 12 ไฟล์โดยไม่มี REVIEW/FAIL, อ่านได้ 14,374 cells, เหลือ 8,705 unique words, duplicate 5,669 cells ตามคีย์ `ป.x + normalized word`, committed SQLite database มี 8,705 คำ, ไม่มี trim violation และไม่มี absolute source path
